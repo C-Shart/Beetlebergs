@@ -42,26 +42,26 @@ PLAYER EXPERIENCE AND GAME POV
 CORE LOOPS
 ==========
 Action: 
-	+ Basic: Teams of beetles fight a number of rounds until the player guesses wrong (or other game-over condition)
-	+ VS: like basic, but you can pick from pre-selected teams (either winning/losing teams from basic mode, or maybe you can create a custom low-level team to experiment with mutation combinations)
++ Basic: Teams of beetles fight a number of rounds until the player guesses wrong (or other game-over condition)
++ VS: like basic, but you can pick from pre-selected teams (either winning/losing teams from basic mode, or maybe you can create a custom low-level team to experiment with mutation combinations)
 
 Rewards: 
-	+ Evolution points? Could be used to unlock new evolutions, beetle types, or features
++ Evolution points? Could be used to unlock new evolutions, beetle types, or features
 
 Expansion: 
-	+ Unlock special beetle types (elites, queens, ?)
-	+ ability to increase/decrease # of evolutions both teams start with
-	+ ability to pick 1 free additional evolution in the beginning and grant it to team of your choice
-	+ Increase available # of slots for custom teams in VS mode
-	+ (depending on player involvement implementation) Unlock special player-directed actions, e.g. Focus Fire, Move Here
++ Unlock special beetle types (elites, queens, ?)
++ ability to increase/decrease # of evolutions both teams start with
++ ability to pick 1 free additional evolution in the beginning and grant it to team of your choice
++ Increase available # of slots for custom teams in VS mode
++ (depending on player involvement implementation) Unlock special player-directed actions, e.g. Focus Fire, Move Here
 
 Example:
-	1. Player starts a game
-	2. Two beetle teams created with a starting evolution each.
-	3. Player predicts Team 2 will win.
-	4. Team 2 wins.
-	5. Losing team (Team 1) gains an evolution and +1 basic beetle
-	6. Player predicts Team 1 will win.
-	7. Team 2 wins somehow.
-	8. Because it only lasted one round, player receives low amount of evo points, and is given the choice to keep the team or have it devoured. Player chooses to devour their team.
-	9. Player given choices: Start New Match, Game Stats(?), Main Menu
+1. Player starts a game
+2. Two beetle teams created with a starting evolution each.
+3. Player predicts Team 2 will win.
+4. Team 2 wins.
+5. Losing team (Team 1) gains an evolution and +1 basic beetle
+6. Player predicts Team 1 will win.
+7. Team 2 wins somehow.
+8. Because it only lasted one round, player receives low amount of evo points, and is given the choice to keep the team or have it devoured. Player chooses to devour their team.
+9. Player given choices: Start New Match, Game Stats(?), Main Menu
