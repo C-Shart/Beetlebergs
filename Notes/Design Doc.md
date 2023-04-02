@@ -31,11 +31,11 @@ PLAYER EXPERIENCE AND GAME POV
 ==============================
 + Top-down omniscient perspective
 + Player is mostly hands off, but I would like to include a way for the player to actually engage and influence. This may interact strongly with the core idea of switching which team you vote for/control, or may not make a difference. Perhaps player interactions or orders can be a consumable resource, e.g. player has 3 Move Heres at the beginning of a match.
-	++ Ideas:
-	++ A special beetle type, or Queen subtype, that allows the player limited control over the beetles. e.g.: Basic beetles generally stay within X radius of Controllable Queen subtype, CQ goes roughly where player clicks (accuracy & speed modifiable?) and meanders around that general spot, basics follow. Player disadvantage: have to manually spawn larvae when available.
-	++ UI that grants player some high-level controls over general bug posture rather than specific actions, e.g. Aggressive/Hold/Defensive, Focus Fire, Use Special Abilities
+	+ Ideas:
+	+ A special beetle type, or Queen subtype, that allows the player limited control over the beetles. e.g.: Basic beetles generally stay within X radius of Controllable Queen subtype, CQ goes roughly where player clicks (accuracy & speed modifiable?) and meanders around that general spot, basics follow. Player disadvantage: have to manually spawn larvae when available.
+	+ UI that grants player some high-level controls over general bug posture rather than specific actions, e.g. Aggressive/Hold/Defensive, Focus Fire, Use Special Abilities
 + Perhaps at the end of the game, when your chosen team has lost, you can choose whether to keep the team (save team for VS mode (maybe breeding??)), or to let the team be devoured by the winners? Some kind of risk/reward for each.
-	++ FLAVOR: haha maybe the PLAYER can devour their losing team!!
+	+ FLAVOR: haha maybe the PLAYER can devour their losing team!!
 
 
 
