@@ -14,7 +14,7 @@ class BeetleBattle(arcade.Window):
 
         # Call the parent class constructor
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-        
+
         self.beetle_sprite_list = None
         self.beetle_prototype = None
         self.background = None
