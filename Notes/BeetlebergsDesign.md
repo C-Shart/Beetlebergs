@@ -343,6 +343,7 @@ However, it is worth listing some other possible features for future extension a
 
 * More types of bugs rather than beetles, with their own different stats and evolutions
 * Additional ways beetles can move, perhaps flying, burrowing or swimming
+* As the battle continues on too long, the arena begins closing in on the beetles
 * Traits which affect beetle behavior such as:
   * Making beetles move towards or way from friendly/enemy beetles
   * Avoiding enemy fire through movement or dodging
