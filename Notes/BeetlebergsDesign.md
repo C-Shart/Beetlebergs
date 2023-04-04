@@ -103,7 +103,7 @@ these are scalar, not vector values, but that's OK because so are the sprite att
 these speed values by finding the global x and y components of the vectors they describe based on `angle`. It might be
 useful to show this process on a diagram:
 
-![A diagram of our calculations of the global x and y components of our forward and sideways vectors.](BeetleSpriteVectors.png)
+![A diagram of our calculations of the global x and y components of our forward and sideways vectors.](BeetleCalculations.png)
 
 While `forward_speed` and `sideways_speed` are scalars, the vectors they describe are drawn in green. We will have to
 calculate the purple vectors that are the x and y components. Luckily, we can use basic trigonometry here. Take notice
