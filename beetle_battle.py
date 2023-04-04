@@ -5,9 +5,9 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Welcome to Arcade"
 
-BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle_GRN.png"
-BEETLE_SPRITE_PATH_RED = None
-BEETLE_SCALING = .65
+BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
+BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
+BEETLE_SCALING = 1
 
 class BeetleBattle(arcade.Window):
     def __init__(self):
