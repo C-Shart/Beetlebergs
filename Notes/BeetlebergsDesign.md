@@ -224,7 +224,7 @@ traits are applied to the beetles.
 
 There are five basic categories that the Traits can be divided into:
 
-* Team Composition Traits: These Traits change the team make up, adding more beetles (which may be Advanced or replacing
+* Team Composition Traits: These Traits change the team make up, adding more beetles, which may be Advanced or replacing
   Basic beetles with Advanced beetles. Sometimes these Advanced beetles may start with certain Traits already given.
 * Stat Change Traits: These Traits change the stats of beetles. They usually affect all beetles on the team but may
   affect only the Advanced beetles. Note that the changes may not be all positive!
