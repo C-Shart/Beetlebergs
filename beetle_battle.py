@@ -1,13 +1,10 @@
 import arcade
+from beetles import Beetle
 
 # Constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Welcome to Arcade"
-
-BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
-BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
-BEETLE_SCALING = 1
 
 class BeetleBattle(arcade.Window):
     def __init__(self):
@@ -26,10 +23,7 @@ class BeetleBattle(arcade.Window):
 
         self.beetle_sprite_list = arcade.SpriteList()
 
-        # Set up the beetle and place it at these coordinates
-        self.beetle_prototype = arcade.Sprite(BEETLE_SPRITE_PATH_GREEN, BEETLE_SCALING)
-        self.beetle_prototype.center_x = 70
-        self.beetle_prototype.center_y = 65
+        self.beetle_prototype = Beetle(70, 65)
         self.beetle_sprite_list.append(self.beetle_prototype)
 
     def on_draw(self):
