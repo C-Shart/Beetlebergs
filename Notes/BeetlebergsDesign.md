@@ -35,7 +35,7 @@ Battle Rules
 
 When the battle begins, all the beetles (without player input) begin attacking each other with whatever attacks they
 have available, causing damage to each other. When a beetle takes enough damage, it dies and is removed from further
-action (though perhaps its projectiles could still kill after death?).
+action, though its in-flight projectiles remain deadly.
 
 The battle ends when all the beetles on either team have been eliminated, making the other team the victor. It could
 technically be possible for the two teams to be eliminated at the same time, but most likely one team over the other
@@ -55,10 +55,13 @@ area. Projectiles will, however simply escape the bounds rather than bouncing.
 
 ### The Teams
 
-The beetles are divided into two battling teams that start on opposite sides. By default there are three beetles in a
-team, though team traits gained over a playthrough can add to that number. By default all the beetles in a team are of
-the Basic beetle type though over a playthrough more powerful or specialized beetle types (that is, the Elite and Queen
-beetle types) can be added to the team.
+The beetles are divided into two battling teams that start on opposite sides. By default there are four beetles in a
+team, though team traits gained over a playthrough can add to that number. By default three the beetles in a team are of
+the Basic beetle type with one Elite beetle type. Over a playthrough more beetles, some of more powerful or specialized
+types like the Queen, may be added to the team as traits are gained.
+
+Note that by starting with an Elite beetle, this allows the team to use an Advanced-only Trait if that is what they
+get through evolution after the first battle.
 
 I propose we encapsulate this into a `Team` class that would have these basic attributes:
 
@@ -128,15 +131,125 @@ Each beetle has a collection of stats that will be represented as attributes on 
 * `max_forward_speed`: How fast the beetle can move along the facing axis (possibly separate `max_backward_speed`?)
 * `max_sideways_speed`: How fast, if at all, the beetle can move along the left-right axis perpendicular to the facing
   axis. A beetle will not have this by default, but gain it through a trait.
-* `accuracy`: How good the beetle is at aiming projectiles or perhaps aiming itself so basic projectiles hit (not sure
-  exactly how to calculate/apply this, to be honest).
+* `accuracy`: How good the beetle is at aiming projectiles. This is implemented as an amount of random "skew" on their
+  shots, with higher `accuracy` having less skew.
 * `max_rotation_speed`: How fast the beetle can turn.
 * `hit_points`: How much damage the beetle can take before being eliminated.
 * `toughness`: How much, if any, damage is negated before it is applied to `hit_points`. In theory, this could also be a
   malus where a beetle takes _extra_ damage! A beetle will only have this by gaining it through a trait.
 * `size`: How large the beetle is, increasing its drawn size and thus its hitbox.
-* `awareness`: The beetle's ability to notice the location of enemies and respond to incoming projectiles (these could
-  separate stats, like `dodge_percentage` and `enemy_awareness`).
+* `vision`: How far the beetle can "see", which controls what things it's able to include in its awareness.
+* `awareness`: The beetle's ability to keep track of important features around it. Higher awareness allows it to
+  consider more important features, as well as have more patience in aiming its shot. (This requires some
+  explanation...)
+
+#### Beetle Awareness
+
+As mentioned `awareness` needs a bit more explanation of what it means. Beetles need to keep track of a few important
+features on the battlefield. For example, they need to track enemy locations, incoming enemy projectiles, hazard
+locations, and nearby allies. Another idea that we are thinking will make for very interesting behavior is that beetles
+do indeed _try_ to aim at enemies and but are limited in how their shots are _timed_ based on their awareness. Let's
+describe the second first, as that is less involved.
+
+Usually, a beetle will fire its Ranged attacks on a regular cadence, just as soon as when the cooldown expires. This is
+good and creates a lot of randomness, so we don't want to get rid of it. However, it would be nice if that _sometimes_
+the beetle is a bit more patient, waiting to fire a shot when it knows it's facing an enemy. And that ability to be
+patient is tied to `awareness`. A less aware beetle will have less time to line up an aimed shot before it gets
+over-eager and fires. Note that the beetle is still limited by its `accuracy`, which adds a random skew to their shots.
+There will likely need to be tuning to get the right level of successful hits versus misses.
+
+The other aspect of `awareness`, that applies when the beetle is making decisions on what to do, is how much of the
+battlefield the beetle can keep in mind. The types of features that the beetle may want to consider are as follows:
+
+* Friendly beetles: How many and what kind of other allied beetles are nearby. This is important for the beetles to use
+  abilities such as Pheromones, where there is a benefit to staying close to an Advanced beetle.
+* Boons: This mostly comes in play with the Cannibal Trait, but these are features of the battlefield that if
+  gained would provide a benefit. In the case of Cannibal, this can represent larvae and beetle corpses which provide
+  HP when collected by a beetle with the trait. Other boons are definitely possible though!
+* Hazards: The opposite of Boons, these are features of the battlefield that would cause damage if collided with.
+* Projectiles: A bit like Hazards in that they cause damage, but these are (enemy?) projectiles that must be avoided. It
+  is an open question of if there will be too many projectiles to have here. It may be necessary to prune the list of
+  projectiles down to those likely to hit the current beetle, and it may be interesting to have the `awareness` stat
+  affect the ability to do that.
+* Enemy Beetles: How many and what kind of enemy beetles are nearby. This is obviously important for both attacking and
+  defense.
+
+Given a list of these, a beetle will of course want to have a priority order for what features it should respond to
+first. A beetle should usually be more worried about avoiding a projectile than picking up a boon, for example. This
+priority order will of course need to be manipulated by us as we find good behavior for what we like, but it is also
+possible that eventually a player can manipulate this order as a reward, making their beetles more aggressive but thus
+more likely to be killed, for example.
+
+Working along with this, the idea is that higher `awareness` lets a beetle consider more of these features to respond
+to as it's making decisions. So let's say an unaware beetle can only keep track of 3 things. The beetle would
+tally up and sort all of the features by their priority order, but in the end only be able to respond to the 3 most
+important things (or perhaps the 3 closest things?). A more aware beetle can increase this to 5, or 7 or so on, being
+able to account for more features.
+
+This also interacts with `vision` in that beetles can only be aware of what's in a certain radius that increases as
+their `vision` goes up. However, note that a longer vision is not necessarily a benefit if that drives the beetle to
+chase off for distant boons, ignoring close dangers. Nonetheless, this should make for interesting behavior that we can
+tweak to our hearts' delight.
+
+It may end up being worth combining `awareness`, `vision`, and `accuracy` into one stat to make things simpler, but we
+suspect that will be borne out as we play around with the values, so for now having extra knobs to play with seems
+helpful.
+
+##### An Example of Beetle Awareness
+
+As an example of how this may work out, notice this diagram:
+
+![The awareness circles of two beetles, A and B, with several features around them](BeetleAwareness.png)
+
+In this diagram are two beetles on opposing teams. Beetle A is on the green team, and Beetle B is on the red team.
+Further, Beetle A has the Cannibal trait. Besides those two beetles, there are two more green beetles and two more red
+beetles (one of which is dead, represented by being crossed out with an X). There are also two red projectiles, one
+green projectile, and an acid puddle hazard.
+
+So Beetle B could ideally be aware of six things:
+
+* The live red ally
+* The one green projectile
+* The three live green enemies
+* The single acid puddle
+
+On the other hand, Beetle A, with its Cannibal ability would be ideally aware of eight things:
+
+* The two green allies
+* The single acid puddle
+* The two red projectiles
+* The two live red enemies
+* The dead red beetle that it can eat as a boon
+
+As an example, let's say the beetles have this priority order, though they discount based on distance:
+
+* Projectiles
+* Enemies
+* Hazards
+* Boons
+* Allies
+
+And then let's say each of Beetle A and Beetle B were stuck with such a low awareness that they could only keep _one_
+thing in mind. They would both only be aware of the closet projectile to them, and would seek to avoid being hit by it.
+
+If they had higher awareness and consider _two_ things, Beetle A could now consider _both_ projectiles, and Beetle B
+could now consider the closest green beetle. Beetle B could possibly decide that the single projectile is worth the
+chance to fire at the closest green beetle and choose to take a shot instead. It could of course still decide to focus
+on avoiding the shot.
+
+If now they could consider _three_ things, Beetle A can now account for one of the enemies, and Beetle B can consider
+two of the enemies. Thus Beetle A may make the same choice to fire at the enemy (though it would likely be better off
+focusing on the two projectiles, in my opinion), and Beetle B can chose which of two enemies would be safer to try to
+attack.
+
+At _four_ things, Beetle A now considers the two projectiles and the two live enemies, and perhaps Beetle B can now
+consider the acid puddle as despite it being lower priority, it's much closer.
+
+At _five_ things, Beetle A can finally possibly consider the dead red beetle (or alternatively focus on the closer
+allies), while Beetle B can consider all the green beetles, the green projectile, and the acid puddle (assuming it
+doesn't trade out the distant green beetle for a nearer ally).
+
+We can go further from here, but this is a good example for how beetle awareness may come into play.
 
 ### Beetle Types
 
@@ -170,8 +283,8 @@ To save some typing the advanced `EliteBettle` and `QueenBeetle` will only have 
 ### Beetle Attacks
 
 As this is game of battling, the beetles of course will need ways to attack each other. Each non-Queen beetle starts
-with a basic primary attack that fires a small projectile along the beetle's facing continually, but they may gain a
-secondary attack through Traits.
+with a basic primary attack that fires a small projectile along the beetle's facing usually continually, but they may
+gain a secondary attack through Traits.
 
 Attacks can be divided into a few basic categories:
 
@@ -262,6 +375,11 @@ There are also two special `Ability` classes, the Queen's ability to spawn larva
 Trap Attack, and the `Cannibal` class which allows the beetles with it to devour larvae or dead beetles to regain
 energy, which can be thought of as a special Triggered Response `Ability`.
 
+Note that `Ability` and `Trait` classes should both consider if their effects can even be applied. For example, a
+`Trait` that provides a boost to the secondary attack needs the beetle to _have_ a secondary attack to apply. As an
+additional concern, certain `Trait`s and `Ability`s may only be applicable to certain types of beetles. This is probably
+easiest implemented with an `acceptable_types` flag enumeration attribute.
+
 Implementing `Trait`s and `Ability`s as small shared classes follows the
 [Flyweight design pattern](https://gameprogrammingpatterns.com/flyweight.html), and should be highly performant and
 make for very self-contained code.
@@ -290,8 +408,8 @@ numbers have been replaced with variables like "X"
 * Attack Boosts
   * Primary ++: Increases `number_of_attacks` for primary attack
   * Secondary ++: Increases `number_of_attacks` for secondary attack
-  * Primary Power: Increases `number_of_attacks` for primary attack
-  * Secondary Power: Increases `number_of_attacks` for secondary attack
+  * Primary Power: Increases `power` for primary attack
+  * Secondary Power: Increases `power` for secondary attack
   * Fire Rate: Increases `fire_rate` for all attacks
   * Farsight: Increases `range` for all Ranged attacks
 * Unique Attacks/Abilities
@@ -299,7 +417,7 @@ numbers have been replaced with variables like "X"
   * Fecund: Only for Queen beetles, Trap attack that spawns larvae that eventually become Basic beetles
   * Cannibal: Triggered Response that fires when the beetle collides with beetle corpses or larvae, consuming it,
     healing HP and increasing size
-* Secondary Attacks/Abilities
+* Secondary Attacks/Abilities (all Elite only)
   * Bombardier: adds secondary Ranged attack that travels in an arc and causes damage in an area-of-effect upon landing
   * Missileer: adds secondary Ranged attack that moves in a straight line that can hit others before reaching the end
   * Mandibles: adds secondary Melee attack that hits in the front of the beetle, doing strong damage and causing
@@ -348,6 +466,7 @@ However, it is worth listing some other possible features for future extension a
   * Making beetles move towards or way from friendly/enemy beetles
   * Avoiding enemy fire through movement or dodging
   * Improving the accuracy of attacks
+  * Terror: When all enemy Advanced beetles are killed, the other team will flee battle, immediately ending the battle
 * Team saving
   * Saving the _losing_ team could be a choice made at the end of a basic mode battle versus
     letting the winning team (or the player?) devour the losing team (for a benefit or increased health maybe?)
