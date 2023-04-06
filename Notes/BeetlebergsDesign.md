@@ -43,6 +43,8 @@ classDiagram
     List~Beetle~ beetles
     List~Trait~ traits
     set_up_team()
+    on_draw()
+    on_update(float delta_time)
   }
 
   Team *-- Beetle
@@ -51,6 +53,8 @@ classDiagram
   class Trait{
     Ability ability
     set_up_trait()
+    on_draw()
+    on_update(float delta_time)
   }
 
   Trait <|-- Swarm
@@ -60,6 +64,7 @@ classDiagram
   Trait <|-- ReinforcementsTrait
 
   class Ability{
+    on_draw()
     on_update(float delta_time)
   }
 
@@ -69,11 +74,13 @@ classDiagram
     float fire_rate
     float range
     int number_of_attacks
+    on_draw()
     on_update(float delta_time)
   }
 
   Attack <|-- MeleeAttack
   class MeleeAttack{
+    on_draw()
     on_update(float delta_time)
   }
 
@@ -82,6 +89,7 @@ classDiagram
 
   Attack <|-- RangedAttack
   class RangedAttack{
+    on_draw()
     on_update(float delta_time)
   }
 
@@ -90,6 +98,7 @@ classDiagram
 
   Attack <|-- TrapAttack
   class TrapAttack{
+    on_draw()
     on_update(float delta_time)
   }
 
@@ -98,6 +107,7 @@ classDiagram
 
   Ability <|-- TriggeredResponse
   class TriggeredResponse{
+    on_draw()
     on_update(float delta_time)
   }
 
@@ -118,6 +128,7 @@ classDiagram
 
   `arcade.Sprite`<|-- Beetle
   class Beetle{
+    int max_hit_points
     int hit_points
     int toughness
     float max_forward_speed
@@ -125,22 +136,26 @@ classDiagram
     float max_sideways_speed
     float sideways_speed
     float max_rotation_speed
-    float awareness
-    float vision
-    float accuracy
+    int awareness
+    int vision
+    int accuracy
     List~Ability~ abilities
+    on_draw()
     on_update(float delta_time)
   }
 
   Beetle *-- Ability
 
   Beetle <|-- BasicBeetle
+  BasicBeetle : on_draw()
   BasicBeetle : on_update(float delta_time)
 
   Beetle <|-- EliteBeetle
+  EliteBeetle : on_draw()
   EliteBeetle : on_update(float delta_time)
 
   Beetle <|-- QueenBeetle
+  QueenBeetle : on_draw()
   QueenBeetle : on_update(float delta_time)
 ```
 
@@ -244,7 +259,8 @@ Thus this is some pseudo-code for handling movement.
 
 Each beetle has a collection of stats that will be represented as attributes on the base `Beetle` class:
 
-* `hit_points`: How much damage the beetle can take before being eliminated.
+* `max_hit_points`: The maximum damage the beetle can take before being eliminated.
+* `hit_points`: The current amount of damage the beetle can take before eliminated.
 * `toughness`: How much, if any, damage is negated before it is applied to `hit_points`. In theory, this could also be a
   malus where a beetle takes _extra_ damage! A beetle will only have this by gaining it through a trait.
 * `max_forward_speed`: How fast the beetle can move along the facing axis (possibly separate `max_backward_speed`?)
@@ -381,13 +397,13 @@ To save some typing the advanced `EliteBettle` and `QueenBeetle` will only have 
   * `max_forward_speed`: 1
   * `accuracy`: 1
   * `max_rotation_speed`: 1
-  * `hit_points`: 1
+  * `max_hit_points`: 1
   * `toughness`: 0
   * `scale`: 1
   * `awareness`: 1
-* `EliteBeetle`: A more powerful Elite Beetle, who is larger and has more `hit_points` and is eligible to gain certain
+* `EliteBeetle`: A more powerful Elite Beetle, who is larger and has more `max_hit_points` and is eligible to gain certain
   traits
-  * `hit_points`: 1.5
+  * `max_hit_points`: 1.5
   * `scale`: 1.3
 * `QueenBeetle`: A smaller, less aware Queen Beetle that can't attack itself, but spawns larvae that if left alone will
   grow into Basic Beetles. Enemy beetles may gain a trait that allows them to devour larvae before they can become Basic
