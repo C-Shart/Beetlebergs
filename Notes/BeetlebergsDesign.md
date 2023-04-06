@@ -30,6 +30,135 @@ So an example playthrough might go like this (with some possible features we hav
 More in-depth details in this document. Note that there's a lot of overlap over rules, so sections of this document may
 refer to rules that are fully explained in other sections.
 
+Class Diagram
+-------------
+
+More details about these classes will be provided throughout this document. For `arcade.Sprite`, only the most relevant
+attributes and methods are listed. Repetition of a inherited method implies a high likelihood that the class will need
+to override it. Only a few example `Trait`s and `Ability`s are included.
+
+```mermaid
+classDiagram
+  class Team{
+    List~Beetle~ beetles
+    List~Trait~ traits
+    set_up_team()
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  Team *-- Beetle
+  Team *-- Trait
+
+  class Trait{
+    Ability ability
+    set_up_trait()
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  Trait <|-- Swarm
+  Trait <|-- MandiblesTrait
+  Trait <|-- PeashooterTrait
+  Trait <|-- AcidPuddleTrait
+  Trait <|-- ReinforcementsTrait
+
+  class Ability{
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  Ability <|-- Attack
+  class Attack{
+    int power
+    float fire_rate
+    float range
+    int number_of_attacks
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  Attack <|-- MeleeAttack
+  class MeleeAttack{
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  MeleeAttack <|-- Mandibles
+  MandiblesTrait <-- Mandibles
+
+  Attack <|-- RangedAttack
+  class RangedAttack{
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  RangedAttack <|-- Peashooter
+  PeashooterTrait <-- Peashooter
+
+  Attack <|-- TrapAttack
+  class TrapAttack{
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  TrapAttack <|-- AcidPuddle
+  AcidPuddleTrait <-- AcidPuddle
+
+  Ability <|-- TriggeredResponse
+  class TriggeredResponse{
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  TriggeredResponse <|-- Reinforcements
+  ReinforcementsTrait <-- Reinforcements
+
+  class `arcade.Sprite`{
+    float radians
+    float center_x
+    float center_y
+    float change_x
+    float change_y
+    float change_angle
+    arcade.types.Color color
+    float scale
+    on_update(float delta_time)
+  }
+
+  `arcade.Sprite`<|-- Beetle
+  class Beetle{
+    int max_hit_points
+    int hit_points
+    int toughness
+    float max_forward_speed
+    float forward_speed
+    float max_sideways_speed
+    float sideways_speed
+    float max_rotation_speed
+    int awareness
+    int vision
+    int accuracy
+    List~Ability~ abilities
+    on_draw()
+    on_update(float delta_time)
+  }
+
+  Beetle *-- Ability
+
+  Beetle <|-- BasicBeetle
+  BasicBeetle : on_draw()
+  BasicBeetle : on_update(float delta_time)
+
+  Beetle <|-- EliteBeetle
+  EliteBeetle : on_draw()
+  EliteBeetle : on_update(float delta_time)
+
+  Beetle <|-- QueenBeetle
+  QueenBeetle : on_draw()
+  QueenBeetle : on_update(float delta_time)
+```
+
 Battle Rules
 ------------
 
@@ -96,6 +225,8 @@ My first thought is that assuming the axes of `change_x` and `change_y` rotate a
 those would be fine to use here as the x-axis and y-axis would thus be local to the beetle. However, from a code
 inspection it looks like those axes stay aligned with the global axes. While `change_angle` works OK for specifying
 rotational velocity, the other two velocities will require some calculation from the `angle` attribute.
+Actually,`radians` is what we'll use in the code rather than `angle` because Python trigonometric functions like
+`math.sin` take in radians. However, this explanation is easier to understand using `angle` which is in degrees.
 
 All the available sprite vector attributes are diagrammed here:
 
@@ -128,20 +259,21 @@ Thus this is some pseudo-code for handling movement.
 
 Each beetle has a collection of stats that will be represented as attributes on the base `Beetle` class:
 
+* `max_hit_points`: The maximum damage the beetle can take before being eliminated.
+* `hit_points`: The current amount of damage the beetle can take before eliminated.
+* `toughness`: How much, if any, damage is negated before it is applied to `hit_points`. In theory, this could also be a
+  malus where a beetle takes _extra_ damage! A beetle will only have this by gaining it through a trait.
 * `max_forward_speed`: How fast the beetle can move along the facing axis (possibly separate `max_backward_speed`?)
 * `max_sideways_speed`: How fast, if at all, the beetle can move along the left-right axis perpendicular to the facing
   axis. A beetle will not have this by default, but gain it through a trait.
-* `accuracy`: How good the beetle is at aiming projectiles. This is implemented as an amount of random "skew" on their
-  shots, with higher `accuracy` having less skew.
 * `max_rotation_speed`: How fast the beetle can turn.
-* `hit_points`: How much damage the beetle can take before being eliminated.
-* `toughness`: How much, if any, damage is negated before it is applied to `hit_points`. In theory, this could also be a
-  malus where a beetle takes _extra_ damage! A beetle will only have this by gaining it through a trait.
-* `size`: How large the beetle is, increasing its drawn size and thus its hitbox.
-* `vision`: How far the beetle can "see", which controls what things it's able to include in its awareness.
+* `scale`: How large the beetle is, increasing its drawn size and thus its hitbox. (Actually part of `arcade.Sprite`.)
 * `awareness`: The beetle's ability to keep track of important features around it. Higher awareness allows it to
   consider more important features, as well as have more patience in aiming its shot. (This requires some
   explanation...)
+* `vision`: How far the beetle can "see", which controls what things it's able to include in its awareness.
+* `accuracy`: How good the beetle is at aiming projectiles. This is implemented as an amount of random "skew" on their
+  shots, with higher `accuracy` having less skew.
 
 #### Beetle Awareness
 
@@ -265,19 +397,19 @@ To save some typing the advanced `EliteBettle` and `QueenBeetle` will only have 
   * `max_forward_speed`: 1
   * `accuracy`: 1
   * `max_rotation_speed`: 1
-  * `hit_points`: 1
+  * `max_hit_points`: 1
   * `toughness`: 0
-  * `size`: 1
+  * `scale`: 1
   * `awareness`: 1
-* `EliteBeetle`: A more powerful Elite Beetle, who is larger and has more `hit_points` and is eligible to gain certain
+* `EliteBeetle`: A more powerful Elite Beetle, who is larger and has more `max_hit_points` and is eligible to gain certain
   traits
-  * `hit_points`: 1.5
-  * `size`: 1.3
+  * `max_hit_points`: 1.5
+  * `scale`: 1.3
 * `QueenBeetle`: A smaller, less aware Queen Beetle that can't attack itself, but spawns larvae that if left alone will
   grow into Basic Beetles. Enemy beetles may gain a trait that allows them to devour larvae before they can become Basic
   Beetles.
   * `accuracy`: 0 (to represent its inability to attack)
-  * `size`: 0.8
+  * `scale`: 0.8
   * `awareness`: 0.8
 
 ### Beetle Attacks
@@ -352,9 +484,9 @@ Thus, it may make the most sense to divide these Traits further into `Trait`s th
 
 So when a battle begins, the code should go through the `traits` attribute of each team, and use that to create new
 instances of the team's beetles, possibly with particular `Ability` instances added to the beetle's `abilities`
-attribute. Each `Trait` would have an `setup_trait` method that is called when the battle is being set up to handle this
-behavior for that trait. Note that certain Traits may only be applied to Advanced beetles, so their `setup_trait` method
-should take that into account.
+attribute. Each `Trait` would have an `set_up_trait` method that is called when the battle is being set up to handle
+this behavior for that trait. Note that certain Traits may only be applied to Advanced beetles, so their `set_up_trait`
+method should take that into account.
 
 For the `Ability` classes, instead there is an `on_update` method that is called every frame to let the `Ability` handle
 its own behavior. Even the basic behavior and the special queen behavior can be implemented as certain `Ability`
@@ -399,8 +531,8 @@ numbers have been replaced with variables like "X"
   * Dodge: Gives beetles a chance to dodge incoming projectiles based on their `awareness`. Additional gains make
     dodging more likely
   * Swift: Increases `max_forward_speed`
-  * Small: Decreases `size`
-  * Gigantism: Increases `size`
+  * Small: Decreases `scale`
+  * Gigantism: Increases `scale`
   * Quick-turn: Increases `max_rotation_speed`
   * Sniper: Increases `accuracy`
   * Higher Perception: Increases `awareness`
