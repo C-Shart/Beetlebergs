@@ -7,7 +7,7 @@ import arcade
 # Constants
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 720
-SCREEN_TITLE = "Welcome to Arcade"
+SCREEN_TITLE = "Welcome to the Ouch, Motherfucker"
 
 # Classes
 class BeetleBattle(arcade.Window):
