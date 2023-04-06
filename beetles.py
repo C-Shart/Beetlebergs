@@ -34,13 +34,14 @@ class Beetle(arcade.Sprite):
 
     def on_draw(self):
         # TODO: handle drawing the beetle
-        super().on_draw(self)
+        super().on_draw()
         for ability in self.abilities:
             ability.on_draw()
         pass
 
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
+        super().on_update(delta_time)
         for ability in self.abilities:
             ability.on_update(delta_time, self)
         pass

@@ -1,5 +1,5 @@
 import arcade
-from attacks import PeashooterTrait
+from attacks import Peashooter
 from beetles import Beetle, DEFAULT_HIT_POINTS
 
 class Team:
@@ -9,7 +9,7 @@ class Team:
         self.center_y = center_y
         self.beetles = [Beetle(self.color, self.center_x, self.center_y)]
         self.sprite_list = arcade.SpriteList();
-        self.traits = [PeashooterTrait()] # TODO: Add more traits at random
+        self.traits = [Peashooter.trait()] # TODO: Add more traits at random
 
         for beetle in self.beetles:
             self.sprite_list.append(beetle)
