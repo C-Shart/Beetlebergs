@@ -42,5 +42,5 @@ class Beetle(arcade.Sprite):
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         for ability in self.abilities:
-            ability.on_update(delta_time)
+            ability.on_update(delta_time, self)
         pass
