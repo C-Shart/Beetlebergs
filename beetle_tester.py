@@ -8,7 +8,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Welcome to the Ouch, Motherfucker"
 
-class BeetleBattle(arcade.Window):
+class BeetleTestes(arcade.Window):
     def __init__(self):
 
         # Call the parent class constructor
@@ -40,6 +40,6 @@ class BeetleBattle(arcade.Window):
         self.red_team.on_update(delta_time)
 
 if __name__ == "__main__":
-    app = BeetleBattle()
+    app = BeetleTestes()
     app.setup()
     arcade.run()
