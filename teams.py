@@ -25,8 +25,11 @@ class Team:
 
         for beetle in self.beetles:
             beetle.hit_points = DEFAULT_HIT_POINTS
-            beetle.abilities = beetle_abilities            
+            beetle.abilities = beetle_abilities
             # TODO: Reset position
+            
+            # TODO: Randomize positions? (i.e. randomized positions within a group on each side)
+
 
     def on_draw(self):
         # TODO: Draws the team
