@@ -20,6 +20,7 @@ class Beetle(arcade.Sprite):
     def __init__(self, team_color, center_x, center_y):
         path = BEETLE_SPRITE_PATH_GREEN if team_color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
         super().__init__(path, BEETLE_SCALING)
+        self.team_color = team_color
         self.center_x = center_x
         self.center_y = center_y
         self.abilities = []
