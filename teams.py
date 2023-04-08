@@ -8,7 +8,7 @@ class Team:
         self.center_x = center_x
         self.center_y = center_y
         self.beetles = [Beetle(self.color, self.center_x, self.center_y)]
-        self.sprite_list = arcade.SpriteList();
+        self.sprite_list = arcade.SpriteList()
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
 
         for beetle in self.beetles:
