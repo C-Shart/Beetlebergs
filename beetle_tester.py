@@ -1,6 +1,5 @@
 import arcade
 from typing import Optional
-from beetles import Beetle
 from teams import Team
 from team_color import TeamColor
 from arcade.pymunk_physics_engine import PymunkPhysicsEngine
@@ -21,8 +20,6 @@ class BeetleTestes(arcade.Window):
         self.background = None
         self.green_team = None
         self.red_team = None
-        self.green_attacks = None
-        self.red_attacks = None
 
         self.green_tester = None
         self.red_tester = None
