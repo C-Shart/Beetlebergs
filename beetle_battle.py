@@ -6,7 +6,7 @@ from team_color import TeamColor
 # Constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-SCREEN_TITLE = "Welcome to Arcade"
+SCREEN_TITLE = "Welcome to the Ouch, Motherfucker"
 
 class BeetleBattle(arcade.Window):
     def __init__(self):

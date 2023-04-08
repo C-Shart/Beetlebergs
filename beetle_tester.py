@@ -12,6 +12,7 @@ SCREEN_TITLE = "BIG BAD BEETLE BALLS"
 
 class BeetleTestes(arcade.Window):
     def __init__(self):
+
         # Call the parent class constructor
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
@@ -33,6 +34,7 @@ class BeetleTestes(arcade.Window):
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
+
         self.red_team = Team(TeamColor.RED, 960, 260)
         self.red_team.set_up_team()
 

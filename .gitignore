@@ -130,3 +130,6 @@ dmypy.json
 
 # VSCode files
 .vscode/
+
+# PureRef files
+.pur/
