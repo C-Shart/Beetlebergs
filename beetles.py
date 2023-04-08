@@ -1,10 +1,13 @@
 import arcade
 import math
+import random
 from team_color import TeamColor
 
 BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
 BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
 BEETLE_SCALING = 1
+BEETLE_MOVE_FORCE = 4000
+
 DEFAULT_HIT_POINTS = 100
 DEFAULT_MAX_FORWARD = 5.0
 DEFAULT_MAX_SIDEWAYS = 2.5

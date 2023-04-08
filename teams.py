@@ -15,7 +15,7 @@ class Team:
             self.sprite_list.append(beetle)
 
     def set_up_team(self):
-        # TODO: Responsible for preparing the beetles for battle, refreshing their health, resetting their psositions.
+        # TODO: Responsible for preparing the beetles for battle, refreshing their health, resetting their positions.
         beetle_abilities = []
         for trait in self.traits:
             if trait.ability is None:
@@ -25,7 +25,7 @@ class Team:
 
         for beetle in self.beetles:
             beetle.hit_points = DEFAULT_HIT_POINTS
-            beetle.abilities = beetle_abilities
+            beetle.abilities = beetle_abilities            
             # TODO: Reset position
 
     def on_draw(self):
