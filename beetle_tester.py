@@ -56,7 +56,10 @@ class BeetleTestes(arcade.Window):
         angle = (math.degrees(math.atan2(y_distance, x_distance)))
         projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
         self.projectiles_list.append(projectile)
-        self.physics_engine.add_sprite(projectile)
+        self.physics_engine.add_sprite_list(self.projectiles_list,
+            collision_type = "pea",
+            elasticity = 0.1
+        )
         # TODO: Figure out how to decouple the sprite angle & the shot angle. Currently sprites are rotated 270 degrees
         # from their flight path.
 
