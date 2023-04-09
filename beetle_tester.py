@@ -50,16 +50,23 @@ class BeetleTestes(arcade.Window):
         def hit_handler(sprite_a, sprite_b, arbiter, space, data):
             first_shape = arbiter.shapes[0]
             second_shape = arbiter.shapes[1]
-            match first_shape:
+
+            if first_shape == "pea":
+                sprite = self.physics_engine.get_sprite_for_shape(first_shape)
+            else:
+                sprite = self.physics_engine.get_sprite_for_shape(second_shape)
+            sprite.remove_from_sprite_lists()
+
+            """ match first_shape:
                 case "pea":
                     sprite = self.physics_engine.get_sprite_for_shape(first_shape)
                     sprite.remove_from_sprite_lists()
                 case "beetle":
-                    sprite = sprite = self.physics_engine.get_sprite_for_shape(second_shape)
+                    sprite = self.physics_engine.get_sprite_for_shape(second_shape)
                     sprite.remove_from_sprite_lists()
                 case _:
-                    print("The fuck did you do?")
-                
+                    print("The fuck did you do?") """
+
         def nohit_handler(sprite_a, sprite_b, arbiter, space, data):
             return False
 
