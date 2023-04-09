@@ -23,11 +23,6 @@ class BeetleTestes(arcade.Window):
         self.green_team = None
         self.red_team = None
 
-        # TODO: So the below commented code is nice, but isn't strictly necessary. It is using the Optional type hint to
-        # basically end up with the exact same thing as the uncommented code, just marked that if this value _does_ have
-        # a value it should be of type arcade.PymunkPhysicsEngine. Feel free to delete this comment once you understand
-        # it.
-        # self.physics_engine = Optional[arcade.PymunkPhysicsEngine]
         self.physics_engine = None
 
     def setup(self):
