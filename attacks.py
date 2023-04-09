@@ -17,6 +17,7 @@ class Attack(Ability):
         self.fire_rate = DEFAULT_FIRE_RATE
         self.range = DEFAULT_RANGE
         self.number_of_attacks = 1
+        self.time_since_last = 0.0
 
     def on_draw(self):
         super().on_draw()
@@ -25,6 +26,7 @@ class Attack(Ability):
     def on_update(self, delta_time):
         super().on_update(delta_time)
         # TODO: To perform the atack with given beetle during each frame, if needed
+        self.time_since_last += delta_time
 
 class RangedAttack(Attack):
     def __init__(self, acting_beetle):
@@ -73,5 +75,6 @@ class Peashooter(RangedAttack):
 
         def on_update(self, delta_time):
             super().on_update(delta_time)
-            # TODO: To perform the atack with given beetle during each frame, if needed
-
+            # TODO: To perform the attack with given beetle during each frame, if needed
+            self.change_x = 1
+            self.change_y = 0
