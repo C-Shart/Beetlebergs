@@ -71,6 +71,7 @@ class Peashooter(RangedAttack):
             if acting_beetle.team_color != TeamColor.GREEN:
                 path = __class__.SPRITE_PATH_RED
             super().__init__(path, center_x, center_y, angle, team_color=acting_beetle.team_color)
+            self.peas_list = None
             self.angle = angle
             self.cos_angle = math.degrees(math.cos(math.radians(self.angle)))
             self.sin_angle = math.degrees(math.sin(math.radians(self.angle)))
@@ -81,11 +82,12 @@ class Peashooter(RangedAttack):
         def setup(self):
             # I had this set up before, but it doesn't appear necessary since it's being handled in on_mouse_press
             # I think we're eventually moving it back here anyway though.
-            """ self.projectiles_list.append()
-            self.physics_engine.add_sprite(
+            self.peas_ = arcade.SpriteList()
+            self.peas_list.append()
+            self.physics_engine.add_sprite_list(self.peas_list,
                 collision_type = "pea",
                 elasticity = 0.1
-            )"""
+            )
 
         def on_draw(self):
             super().on_draw()

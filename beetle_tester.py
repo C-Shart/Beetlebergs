@@ -47,7 +47,7 @@ class BeetleTestes(arcade.Window):
             pass
 
         self.physics_engine.add_collision_handler("pea", "beetle", hit_handler)
-        self.physics_engine.add_collision_handler("pea", "pea", nohit_handler)
+        self.physics_engine.add_collision_handler("pea", "pea", hit_handler)
 
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
