@@ -34,7 +34,7 @@ class BeetleTestes(arcade.Window):
         self.red_team.set_up_team()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        beetle = self.green_team.beetles[0] if arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
+        beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
         x_distance = x - beetle.center_x
         y_distance = y - beetle.center_y
         angle = (math.degrees(math.atan(y_distance / x_distance))) - 90
