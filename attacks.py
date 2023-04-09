@@ -1,5 +1,3 @@
-import arcade
-import pymunk
 import math
 from abilities import Ability
 from hazards import Projectile

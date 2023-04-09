@@ -37,11 +37,29 @@ class BeetleTestes(arcade.Window):
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
-        def hit_handler(sprite_a, sprite_b, arbiter, space, data):
-            sprite_shape = arbiter.shapes[0]
-            sprite = self.physics_engine.get_sprite_for_shape(sprite_shape)
-            sprite.remove_from_sprite_lists()
+        self.physics_engine.add_sprite_list(self.green_team.beetles,
+                    elasticity = 0.0,
+                    collision_type="beetle"
+                    )
+        self.physics_engine.add_sprite_list(self.red_team.beetles,
+                    elasticity = 0.0,
+                    collision_type="beetle"
+                    )
 
+
+        def hit_handler(sprite_a, sprite_b, arbiter, space, data):
+            first_shape = arbiter.shapes[0]
+            second_shape = arbiter.shapes[1]
+            match first_shape:
+                case "pea":
+                    sprite = self.physics_engine.get_sprite_for_shape(first_shape)
+                    sprite.remove_from_sprite_lists()
+                case "beetle":
+                    sprite = sprite = self.physics_engine.get_sprite_for_shape(second_shape)
+                    sprite.remove_from_sprite_lists()
+                case _:
+                    print("The fuck did you do?")
+                
         def nohit_handler(sprite_a, sprite_b, arbiter, space, data):
             return False
 
@@ -56,8 +74,8 @@ class BeetleTestes(arcade.Window):
         projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
         self.projectiles_list.append(projectile)
         self.physics_engine.add_sprite_list(self.projectiles_list,
-            collision_type = "pea",
-            elasticity = 0.1
+            elasticity = 0.1,
+            collision_type = "pea"
         )
         # TODO: Figure out how to decouple the sprite angle & the shot angle. Currently sprites are rotated 270 degrees
         # from their flight path.
