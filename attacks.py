@@ -73,7 +73,7 @@ class Peashooter(RangedAttack):
         def setup(self):
             self.projectiles_list.append()
             self.physics_engine.add_sprite(
-                # collision_type = "pea",
+                collision_type = "pea",
                 elasticity = 0.1
             )
 

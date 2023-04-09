@@ -37,6 +37,18 @@ class BeetleTestes(arcade.Window):
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
+        def hit_handler(sprite_a, sprite_b, arbiter, space, data):
+            sprite_shape = arbiter.shapes[0]
+            sprite = self.physics_engine.get_sprite_for_shape(sprite_shape)
+            sprite.remove_from_sprite_lists()
+
+        def nohit_handler(sprite_a, sprite_b):
+            
+            pass
+
+        self.physics_engine.add_collision_handler("pea", "beetle", hit_handler)
+        self.physics_engine.add_collision_handler("pea", "pea", nohit_handler)
+
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
         x_distance = x - beetle.center_x
