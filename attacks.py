@@ -68,11 +68,11 @@ class Peashooter(RangedAttack):
             if acting_beetle.team_color != TeamColor.GREEN:
                 path = __class__.SPRITE_PATH_RED
             super().__init__(path, center_x, center_y, angle, team_color=acting_beetle.team_color)
-            pea = arcade.Sprite(path)
+            self.angle = angle
 
         def setup(self):
+            self.projectiles_list.append()
             self.physics_engine.add_sprite(
-                pea,
                 # collision_type = "pea",
                 elasticity = 0.1
             )
@@ -83,4 +83,4 @@ class Peashooter(RangedAttack):
 
         def on_update(self, delta_time):
             super().on_update(delta_time)
-            self.physics_engine.set_velocity(self, (25, 0))
+            self.physics_engine.apply_force(self, (250, 0))
