@@ -1,4 +1,6 @@
 import arcade
+import pymunk
+import math
 from abilities import Ability
 from hazards import Projectile
 from traits import Trait
@@ -62,6 +64,7 @@ class Peashooter(RangedAttack):
     class projectile(Projectile):
         SPRITE_PATH_GREEN = "Assets/Sprites/Attributed/bullet_bw_green.png"
         SPRITE_PATH_RED = "Assets/Sprites/Attributed/bullet_bw_red.png"
+        DEFAULT_PEA_VELOCITY_MULTIPLIER = 10
 
         def __init__(self, center_x, center_y, angle, acting_beetle):
             path = __class__.SPRITE_PATH_GREEN
@@ -69,13 +72,20 @@ class Peashooter(RangedAttack):
                 path = __class__.SPRITE_PATH_RED
             super().__init__(path, center_x, center_y, angle, team_color=acting_beetle.team_color)
             self.angle = angle
+            self.cos_angle = math.degrees(math.cos(math.radians(self.angle)))
+            self.sin_angle = math.degrees(math.sin(math.radians(self.angle)))
+            self.x_velocity = float(self.cos_angle * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER)
+            self.y_velocity = float(self.sin_angle * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER)
+            self.shot_vector = (self.x_velocity, self.y_velocity)
 
         def setup(self):
-            self.projectiles_list.append()
+            # I had this set up before, but it doesn't appear necessary since it's being handled in on_mouse_press
+            # I think we're eventually moving it back here anyway though.
+            """ self.projectiles_list.append()
             self.physics_engine.add_sprite(
                 collision_type = "pea",
                 elasticity = 0.1
-            )
+            )"""
 
         def on_draw(self):
             super().on_draw()
@@ -83,4 +93,4 @@ class Peashooter(RangedAttack):
 
         def on_update(self, delta_time):
             super().on_update(delta_time)
-            self.physics_engine.apply_force(self, (250, 0))
+            self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))
