@@ -43,8 +43,7 @@ class BeetleTestes(arcade.Window):
             sprite.remove_from_sprite_lists()
 
         def nohit_handler(sprite_a, sprite_b, arbiter, space, data):
-            
-            pass
+            return False
 
         self.physics_engine.add_collision_handler("pea", "beetle", hit_handler)
         self.physics_engine.add_collision_handler("pea", "pea", nohit_handler)
