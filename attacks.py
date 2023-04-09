@@ -80,14 +80,13 @@ class Peashooter(RangedAttack):
             self.shot_vector = (self.x_velocity, self.y_velocity)
 
         def setup(self):
-            # I had this set up before, but it doesn't appear necessary since it's being handled in on_mouse_press
-            # I think we're eventually moving it back here anyway though.
-            self.peas_ = arcade.SpriteList()
+            # Commenting out for now since it's in on_mouse_press, but I think we're moving it back here eventually?
+            """ self.peas_list = arcade.SpriteList()
             self.peas_list.append()
             self.physics_engine.add_sprite_list(self.peas_list,
                 collision_type = "pea",
                 elasticity = 0.1
-            )
+            ) """
 
         def on_draw(self):
             super().on_draw()
