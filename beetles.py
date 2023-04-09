@@ -37,6 +37,10 @@ class Beetle(arcade.Sprite):
         self.accuracy = DEFAULT_ACCURACY
         self.angle = 270.0 if team_color == TeamColor.GREEN else 90.0
 
+    @property
+    def physics_engine(self):
+        return self.physics_engines[0]
+
     def on_draw(self):
         # TODO: handle drawing the beetle
         super().on_draw()

@@ -75,6 +75,4 @@ class Peashooter(RangedAttack):
 
         def on_update(self, delta_time):
             super().on_update(delta_time)
-            # TODO: To perform the attack with given beetle during each frame, if needed
-            self.change_x = 1
-            self.change_y = 0
+            self.physics_engine.set_velocity(self, (25, 0))

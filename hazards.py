@@ -8,6 +8,10 @@ class Hazard(arcade.Sprite):
         self.center_y = center_y
         self.team_color = team_color
 
+    @property
+    def physics_engine(self):
+        return self.physics_engines[0]
+
     def on_draw(self):
         # TODO: handle drawing the hazard
         super().on_draw()

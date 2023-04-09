@@ -23,6 +23,13 @@ class BeetleTestes(arcade.Window):
         self.green_team = None
         self.red_team = None
 
+        # TODO: So the below commented code is nice, but isn't strictly necessary. It is using the Optional type hint to
+        # basically end up with the exact same thing as the uncommented code, just marked that if this value _does_ have
+        # a value it should be of type arcade.PymunkPhysicsEngine. Feel free to delete this comment once you understand
+        # it.
+        # self.physics_engine = Optional[arcade.PymunkPhysicsEngine]
+        self.physics_engine = None
+
     def setup(self):
         self.background = arcade.load_texture("Assets/Images/octagon.png")
         self.projectiles_list = arcade.SpriteList()
@@ -33,6 +40,8 @@ class BeetleTestes(arcade.Window):
         self.red_team = Team(TeamColor.RED, 960, 260)
         self.red_team.set_up_team()
 
+        self.physics_engine = arcade.PymunkPhysicsEngine()
+
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
         x_distance = x - beetle.center_x
@@ -40,6 +49,7 @@ class BeetleTestes(arcade.Window):
         angle = (math.degrees(math.atan(y_distance / x_distance))) - 90
         projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
         self.projectiles_list.append(projectile)
+        self.physics_engine.add_sprite(projectile)
 
     def on_draw(self):
         arcade.start_render()
@@ -52,6 +62,7 @@ class BeetleTestes(arcade.Window):
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
         self.projectiles_list.on_update(delta_time)
+        self.physics_engine.step()
 
 if __name__ == "__main__":
     app = BeetleTestes()
