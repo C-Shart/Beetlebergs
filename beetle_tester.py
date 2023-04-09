@@ -42,12 +42,12 @@ class BeetleTestes(arcade.Window):
             sprite = self.physics_engine.get_sprite_for_shape(sprite_shape)
             sprite.remove_from_sprite_lists()
 
-        def nohit_handler(sprite_a, sprite_b):
+        def nohit_handler(sprite_a, sprite_b, arbiter, space, data):
             
             pass
 
         self.physics_engine.add_collision_handler("pea", "beetle", hit_handler)
-        self.physics_engine.add_collision_handler("pea", "pea", hit_handler)
+        self.physics_engine.add_collision_handler("pea", "pea", nohit_handler)
 
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
@@ -56,7 +56,10 @@ class BeetleTestes(arcade.Window):
         angle = (math.degrees(math.atan2(y_distance, x_distance)))
         projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
         self.projectiles_list.append(projectile)
-        self.physics_engine.add_sprite(projectile)
+        self.physics_engine.add_sprite_list(self.projectiles_list,
+            collision_type = "pea",
+            elasticity = 0.1
+        )
         # TODO: Figure out how to decouple the sprite angle & the shot angle. Currently sprites are rotated 270 degrees
         # from their flight path.
 
