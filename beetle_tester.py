@@ -52,6 +52,7 @@ class BeetleTestes(arcade.Window):
             second_shape = arbiter.shapes[1]
             sprite = self.physics_engine.get_sprite_for_shape(second_shape) if first_shape == "pea" else self.physics_engine.get_sprite_for_shape(first_shape)
             sprite.remove_from_sprite_lists()
+            return True
 
         def nohit_handler(sprite_a, sprite_b, arbiter, space, data):
             return False
