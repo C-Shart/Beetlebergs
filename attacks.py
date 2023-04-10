@@ -62,23 +62,21 @@ class Peashooter(RangedAttack):
     class projectile(Projectile):
         SPRITE_PATH_GREEN = "Assets/Sprites/Attributed/bullet_bw_green.png"
         SPRITE_PATH_RED = "Assets/Sprites/Attributed/bullet_bw_red.png"
-        DEFAULT_PEA_VELOCITY_MULTIPLIER = 10
+        DEFAULT_PEA_VELOCITY_MULTIPLIER = 500.0
 
         def __init__(self, center_x, center_y, angle, acting_beetle):
             path = __class__.SPRITE_PATH_GREEN
             if acting_beetle.team_color != TeamColor.GREEN:
                 path = __class__.SPRITE_PATH_RED
             super().__init__(path, center_x, center_y, angle, team_color=acting_beetle.team_color)
-            self.peas_list = None
             self.angle = angle
-            self.cos_angle = math.degrees(math.cos(math.radians(self.angle)))
-            self.sin_angle = math.degrees(math.sin(math.radians(self.angle)))
-            self.x_velocity = float(self.cos_angle * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER)
-            self.y_velocity = float(self.sin_angle * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER)
-            self.shot_vector = (self.x_velocity, self.y_velocity)
-            self.angle += 90.0
-            if acting_beetle.team_color == TeamColor.GREEN:
-                self.angle += 180.0
+
+            x_velocity = math.cos(self.radians) * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER
+            y_velocity = math.sin(self.radians) * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER
+            self.shot_vector = (x_velocity, y_velocity)
+
+            # Fixes the angle of the sprite itself, avoiding changing the velocity vector
+            self.angle -= 90.0
 
         def setup(self):
             # Commenting out for now since it's in on_mouse_press, but I think we're moving it back here eventually?
