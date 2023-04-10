@@ -255,6 +255,31 @@ together, and realizing that if θ is 90 - `angle`, then it is the other angle i
 
 Thus this is some pseudo-code for handling movement.
 
+### Beetle Movement Logic Diagram
+```mermaid
+stateDiagram-v2
+FACING : FACING\nBeetle is always facing target.\nTargets in priority order are\nEnemy Beetle\ndestination (boon, ally, location, etc.)
+
+[*] --> Moving: movement_timer hits 0\nCan be caused by timer countdown, special event
+    state Moving {
+        EVALUATE_FIELD : EVALUATE_FIELD\nBeetle evaluates field.
+        SELECT_TARGET : SELECT_TARGET\nBeetle selects map target.
+        BEGIN_MOVE : BEGIN_MOVE\nBeetle begins moving towards target.
+        ARRIVE : ARRIVE\nBeetle has arrived at target or as close as possible.
+        SET_MOVEMENT_TIMER : SET_MOVEMENT_TIMER\nmovement_timer set based on field eval
+        
+        [*] --> EVALUATE_FIELD
+        EVALUATE_FIELD --> SELECT_TARGET
+        SELECT_TARGET --> BEGIN_MOVE
+        BEGIN_MOVE --> ARRIVE
+        ARRIVE --> SET_MOVEMENT_TIMER
+        SET_MOVEMENT_TIMER --> [*]
+        }
+Moving --> [*]
+```
+
+Prototype proposal for movement logic. This is basically what will eventually replace the mouseclicks to move.
+
 ### Beetle Stats
 
 Each beetle has a collection of stats that will be represented as attributes on the base `Beetle` class:
