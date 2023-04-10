@@ -272,7 +272,9 @@ MANEUVERS : MANEUVERS\nBeetle can access a list of move-based maneuvers\ne.g. "m
         
         [*] --> EVALUATE_FIELD
         EVALUATE_FIELD --> SELECT_TARGET
+        EVALUATE_FIELD --> SELECT_MANEUVER
         SELECT_TARGET --> BEGIN_MOVE
+        SELECT_MANEUVER --> BEGIN_MOVE
         BEGIN_MOVE --> ARRIVE
         ARRIVE --> SET_MOVEMENT_TIMER
         SET_MOVEMENT_TIMER --> [*]
