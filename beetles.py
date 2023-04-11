@@ -52,3 +52,8 @@ class Beetle(arcade.Sprite):
         super().on_update(delta_time)
         for ability in self.abilities:
             ability.on_update(delta_time, self)
+        if self.hit_points <= 0:
+            self.remove_from_sprite_lists()
+
+    def damage(self, damage):
+        self.hit_points -= damage
