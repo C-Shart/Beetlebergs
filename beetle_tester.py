@@ -79,15 +79,16 @@ class BeetleTestes(arcade.Window):
 
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
+        x_distance = x - beetle.center_x
+        y_distance = y - beetle.center_y
+        angle = (math.degrees(math.atan2(y_distance, x_distance)))
         if self.mode == __class__.TesterMode.SHOOTING:
-            x_distance = x - beetle.center_x
-            y_distance = y - beetle.center_y
-            angle = (math.degrees(math.atan2(y_distance, x_distance)))
             projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
             self.projectiles_list.append(projectile)
             self.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
         elif self.mode == __class__.TesterMode.MOVING:
             # TODO pass in click as movement location for beetle.
+            beetle.move_to(x, y)
             print(f"Moving {'Green' if beetle.team_color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
 
     def on_click_mode(self, event):
