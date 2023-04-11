@@ -9,8 +9,8 @@ BEETLE_SCALING = 1
 BEETLE_MOVE_FORCE = 500
 
 DEFAULT_HIT_POINTS = 100
-DEFAULT_MAX_FORWARD = 5.0
-DEFAULT_MAX_SIDEWAYS = 2.5
+DEFAULT_MAX_FORWARD = 150.0
+DEFAULT_MAX_SIDEWAYS = 100.0
 DEFAULT_MAX_ROTATION = math.pi / 360.0
 DEFAULT_AWARENESS = 50
 DEFAULT_VISION = 25
@@ -50,11 +50,16 @@ class Beetle(arcade.Sprite):
     def move_to(self, click_x, click_y):
         delta_x = click_x - self.center_x
         delta_y = click_y - self.center_y
-        reached_target = delta_x < 10 and delta_y < 10
+        reached_target = delta_x < 50 and delta_y < 50
         self.angle = math.atan2(delta_y, delta_x)
+
+        self.xtest = math.sin(self.angle) * BEETLE_MOVE_FORCE
+        self.ytest = math.cos(self.angle) * BEETLE_MOVE_FORCE
+
         self.x_velocity = math.sin(self.radians) * BEETLE_MOVE_FORCE
         self.y_velocity = math.cos(self.radians) * BEETLE_MOVE_FORCE
-        self.move_vector = (self.x_velocity, self.y_velocity)
+
+        self.move_vector = (self.xtest, self.ytest)
 
         if reached_target is False:
             self.is_moving = True
@@ -79,7 +84,7 @@ class Beetle(arcade.Sprite):
             self.remove_from_sprite_lists()
 
         if self.is_moving is True:
-            self.physics_engine.apply_force(self, (self.x_velocity, self.y_velocity))
+            self.physics_engine.apply_force(self, self.move_vector)
         else:
             self.physics_engine.set_velocity(self, (0, 0))
 
