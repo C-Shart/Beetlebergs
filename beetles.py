@@ -17,11 +17,11 @@ DEFAULT_VISION = 25
 DEFAULT_ACCURACY = 25
 
 class Beetle(arcade.Sprite):
-    def __init__(self, team_color, center_x, center_y):
-        path = BEETLE_SPRITE_PATH_GREEN if team_color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
+    def __init__(self, team, center_x, center_y):
+        path = BEETLE_SPRITE_PATH_GREEN if team.color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
         super().__init__(path, BEETLE_SCALING)
+        self.team = team
         self.scale = BEETLE_SCALING
-        self.team_color = team_color
         self.center_x = center_x
         self.center_y = center_y
         self.abilities = []
@@ -35,7 +35,7 @@ class Beetle(arcade.Sprite):
         self.awareness = DEFAULT_AWARENESS
         self.vision = DEFAULT_VISION
         self.accuracy = DEFAULT_ACCURACY
-        self.angle = 270.0 if team_color == TeamColor.GREEN else 90.0
+        self.angle = 270.0 if team.color == TeamColor.GREEN else 90.0
 
     @property
     def physics_engine(self):

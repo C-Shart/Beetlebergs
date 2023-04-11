@@ -7,8 +7,9 @@ class Team:
         self.color = color
         self.center_x = center_x
         self.center_y = center_y
-        self.beetles = [Beetle(self.color, self.center_x, self.center_y)]
+        self.beetles = [Beetle(self, self.center_x, self.center_y)]
         self.sprite_list = arcade.SpriteList()
+        self.projectiles_list = arcade.SpriteList()
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
 
         for beetle in self.beetles:
@@ -34,8 +35,8 @@ class Team:
     def on_draw(self):
         # TODO: Draws the team
         self.sprite_list.draw()
+        self.projectiles_list.draw()
 
     def on_update(self, delta_time):
-        # TODO: Updates the team
-        for beetle in self.beetles:
-            beetle.on_update(delta_time)
+        self.sprite_list.on_update(delta_time)
+        self.projectiles_list.on_update(delta_time)

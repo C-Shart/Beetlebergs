@@ -20,7 +20,6 @@ class BeetleTestes(arcade.Window):
         arcade.set_background_color(arcade.color.WHITE)
 
         self.background = None
-        self.projectiles_list = None
 
         self.green_team = None
         self.red_team = None
@@ -40,7 +39,6 @@ class BeetleTestes(arcade.Window):
 
     def setup(self):
         self.background = arcade.load_texture("Assets/Images/octagon.png")
-        self.projectiles_list = arcade.SpriteList()
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
@@ -68,11 +66,11 @@ class BeetleTestes(arcade.Window):
                                             )
 
         def pea_handler(pea, beetle, _arbiter, _space, _data):
-            if pea.team_color == beetle.team_color:
+            if pea.team_color == beetle.team.color:
                 return False
             pea.remove_from_sprite_lists()
             beetle.damage(pea.power)
-            print(f"{'Green' if beetle.team_color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
+            print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
             return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
@@ -103,13 +101,11 @@ class BeetleTestes(arcade.Window):
         arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
         self.green_team.on_draw()
         self.red_team.on_draw()
-        self.projectiles_list.draw()
         self.manager.draw()
 
     def on_update(self, delta_time):
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
-        self.projectiles_list.on_update(delta_time)
         self.physics_engine.step()
 
     class TesterMode(Enum):
