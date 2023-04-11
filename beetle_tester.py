@@ -84,7 +84,7 @@ class BeetleTestes(arcade.Window):
             angle = (math.degrees(math.atan2(y_distance, x_distance)))
             projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
             self.projectiles_list.append(projectile)
-            self.physics_engine.add_sprite_list(self.projectiles_list, elasticity = 0.1, collision_type = "pea")
+            self.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
         elif self.mode == __class__.TesterMode.MOVING:
             # TODO pass in click as movement location for beetle.
             print(f"Moving {'Green' if beetle.team_color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
