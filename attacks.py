@@ -96,4 +96,5 @@ class Peashooter(RangedAttack):
 
         def on_update(self, delta_time):
             super().on_update(delta_time)
-            self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))
+            if self.enabled:
+                self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))
