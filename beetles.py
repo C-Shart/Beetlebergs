@@ -36,6 +36,7 @@ class Beetle(arcade.Sprite):
         self.vision = DEFAULT_VISION
         self.accuracy = DEFAULT_ACCURACY
         self.angle = 270.0 if team.color == TeamColor.GREEN else 90.0
+        self.firing_target = None
 
     @property
     def physics_engine(self):
@@ -51,7 +52,7 @@ class Beetle(arcade.Sprite):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
         for ability in self.abilities:
-            ability.on_update(delta_time, self)
+            ability.on_update(delta_time)
         if self.hit_points <= 0:
             self.remove_from_sprite_lists()
 

@@ -17,16 +17,18 @@ class Team:
 
     def set_up_team(self):
         # TODO: Responsible for preparing the beetles for battle, refreshing their health, resetting their positions.
-        beetle_abilities = []
+        beetle_ability_traits = []
         for trait in self.traits:
             if trait.ability is None:
-                beetle_abilities.append(trait.ability())
-            else:
                 trait.set_up_trait(self)
+            else:
+                beetle_ability_traits.append(trait)
 
         for beetle in self.beetles:
             beetle.hit_points = DEFAULT_HIT_POINTS
-            beetle.abilities = beetle_abilities
+            beetle.abilities = []
+            for trait in beetle_ability_traits:
+                beetle.abilities.append(trait.ability(beetle))
             # TODO: Reset positions
             
             # TODO: Randomize positions? (i.e. randomized positions within a group on each side)
