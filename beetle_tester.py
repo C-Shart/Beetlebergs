@@ -39,13 +39,16 @@ class BeetleTestes(arcade.Window):
 
         self.physics_engine.add_sprite_list(self.green_team.beetles,
                     elasticity = 0.0,
-                    collision_type="beetle"
+                    friction = 0.8,
+                    moment_of_intertia = 1,
+                    collision_type="green_beetle"
                     )
         self.physics_engine.add_sprite_list(self.red_team.beetles,
                     elasticity = 0.0,
-                    collision_type="beetle"
+                    friction = 0.8,
+                    moment_of_intertia = 1,
+                    collision_type="red_beetle"
                     )
-
 
         def hit_handler(sprite_a, sprite_b, arbiter, space, data):
             first_shape = arbiter.shapes[0]
@@ -57,7 +60,11 @@ class BeetleTestes(arcade.Window):
         def nohit_handler(sprite_a, sprite_b, arbiter, space, data):
             return False
 
-        self.physics_engine.add_collision_handler("pea", "beetle", hit_handler)
+        self.physics_engine.add_collision_handler("green_pea", "green_beetle", nohit_handler)
+        self.physics_engine.add_collision_handler("red_pea", "green_beetle", hit_handler)
+        self.physics_engine.add_collision_handler("green_pea", "red_beetle", hit_handler)
+        self.physics_engine.add_collision_handler("red_pea", "red_beetle", nohit_handler)
+
         self.physics_engine.add_collision_handler("pea", "pea", nohit_handler)
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -68,11 +75,9 @@ class BeetleTestes(arcade.Window):
         projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
         self.projectiles_list.append(projectile)
         self.physics_engine.add_sprite_list(self.projectiles_list,
-            elasticity = 0.1,
-            collision_type = "pea"
-        )
-        # TODO: Figure out how to decouple the sprite angle & the shot angle. Currently sprites are rotated 270 degrees
-        # from their flight path.
+                                            elasticity = 0.1,
+                                            collision_type = "red_pea" if beetle.team_color == TeamColor.RED else "green_pea"
+                                            )
 
     def on_draw(self):
         arcade.start_render()
