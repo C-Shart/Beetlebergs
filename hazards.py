@@ -21,9 +21,10 @@ class Hazard(arcade.Sprite):
         super().on_update(delta_time)
 
 class Projectile(Hazard):
-    def __init__(self, path, center_x, center_y, angle, scaling=1.0, team_color=TeamColor.NEUTRAL):
+    def __init__(self, path, center_x, center_y, angle, power=0, scaling=1.0, team_color=TeamColor.NEUTRAL):
         super().__init__(path, center_x, center_y, scaling, team_color)
         self.angle = angle
+        self.power = power
         self.forward_speed = 0.0
         self.sideways_speed = 0.0
 

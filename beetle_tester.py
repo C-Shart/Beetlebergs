@@ -67,12 +67,13 @@ class BeetleTestes(arcade.Window):
                                             collision_type="beetle"
                                             )
 
-        def pea_handler(pea_sprite, beetle_sprite, _arbiter, _space, _data):
-            if pea_sprite.team_color == beetle_sprite.team_color:
+        def pea_handler(pea, beetle, _arbiter, _space, _data):
+            if pea.team_color == beetle.team_color:
                 return False
-            pea_sprite.remove_from_sprite_lists()
-            # TODO: Damage beetle
-            return True
+            pea.remove_from_sprite_lists()
+            beetle.damage(pea.power)
+            print(f"{'Green' if beetle.team_color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
+            return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
 

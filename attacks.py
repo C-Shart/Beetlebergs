@@ -63,12 +63,13 @@ class Peashooter(RangedAttack):
         SPRITE_PATH_GREEN = "Assets/Sprites/Attributed/bullet_bw_green.png"
         SPRITE_PATH_RED = "Assets/Sprites/Attributed/bullet_bw_red.png"
         DEFAULT_PEA_VELOCITY_MULTIPLIER = 500.0
+        PEA_POWER = 20
 
         def __init__(self, center_x, center_y, angle, acting_beetle):
             path = __class__.SPRITE_PATH_GREEN
             if acting_beetle.team_color != TeamColor.GREEN:
                 path = __class__.SPRITE_PATH_RED
-            super().__init__(path, center_x, center_y, angle, team_color=acting_beetle.team_color)
+            super().__init__(path, center_x, center_y, angle, __class__.PEA_POWER, team_color=acting_beetle.team_color)
             self.angle = angle
 
             x_velocity = math.cos(self.radians) * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER
