@@ -109,6 +109,7 @@ class BeetleTestes(arcade.Window):
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
         self.physics_engine.step()
+        self.physics_engine.resync_sprites()
 
     class TesterMode(Enum):
         SHOOTING = 0,

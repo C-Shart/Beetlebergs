@@ -7,6 +7,7 @@ BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
 BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
 BEETLE_SCALING = 1
 BEETLE_MOVE_FORCE = 500
+BEETLE_ROTATION_SPEED = 0.017453
 
 DEFAULT_HIT_POINTS = 100
 DEFAULT_MAX_FORWARD = 150.0
@@ -42,7 +43,10 @@ class Beetle(arcade.Sprite):
         self.is_moving = None
         self.x_velocity = 0
         self.y_velocity = 0
+        self.move_target = None
+        self.angle_target = None
         self.firing_target = None
+
     @property
     def physics_engine(self):
         if len(self.physics_engines) > 0:
@@ -50,27 +54,11 @@ class Beetle(arcade.Sprite):
         else:
             return None
 
-    def move_to(self, click_x, click_y):
-        delta_x = click_x - self.center_x
-        delta_y = click_y - self.center_y
-        reached_target = delta_x < 50 and delta_y < 50
-        self.angle = math.atan2(delta_y, delta_x)
-
-        self.xtest = math.sin(self.angle) * BEETLE_MOVE_FORCE
-        self.ytest = math.cos(self.angle) * BEETLE_MOVE_FORCE
-
-        self.x_velocity = math.sin(self.radians) * BEETLE_MOVE_FORCE
-        self.y_velocity = math.cos(self.radians) * BEETLE_MOVE_FORCE
-
-        self.move_vector = (self.xtest, self.ytest)
-
-        if reached_target is False:
-            self.is_moving = True
-        elif reached_target is True:
-            self.is_moving = False
-        else:
-            self.is_moving = None
-        return self.is_moving
+    def move_to(self, target_x, target_y):
+        self.move_target = (target_x, target_y)
+        delta_x = target_x - self.center_x
+        delta_y = target_y - self.center_y
+        self.angle_target = math.atan2(delta_y, delta_x) - (math.pi / 2)
 
     def on_draw(self):
         # TODO: handle drawing the beetle
@@ -85,11 +73,36 @@ class Beetle(arcade.Sprite):
             ability.on_update(delta_time)
         if self.hit_points <= 0:
             self.remove_from_sprite_lists()
-
-        if self.is_moving is True:
-            self.physics_engine.apply_force(self, self.move_vector)
         else:
-            self.physics_engine.set_velocity(self, (0, 0))
+            if self.move_target:
+                target_x, target_y = self.move_target
+                delta_x = target_x - self.center_x
+                delta_y = target_y - self.center_y
+                if abs(delta_x) < 10.0 and abs(delta_y) < 10.0:
+                    self.move_target = None
+                    self.physics_engine.set_velocity(self, (0.0 , 0.0))
+                else:
+                    target_angle = math.atan2(delta_y, delta_x)
+                    x_velocity = math.cos(target_angle) * BEETLE_MOVE_FORCE
+                    y_velocity = math.sin(target_angle) * BEETLE_MOVE_FORCE
+                    self.physics_engine.set_velocity(self, (x_velocity, y_velocity))
+
+            if self.angle_target:
+                body = self.physics_engine.sprites[self].body
+                while body.angle < -2.0 * math.pi:
+                    body.angle += 2.0 * math.pi
+                while body.angle > 2.0 * math.pi:
+                    body.angle -= 2.0 * math.pi
+                delta_rotation = self.angle_target - body.angle
+                print(f"DEBUG: {self.angle_target} - {body.angle} = {delta_rotation}")
+                if abs(delta_rotation) < 0.0000005:
+                    self.target_angle = None
+                elif delta_rotation >= 0.0:
+                    body.angle -= min(delta_rotation, BEETLE_ROTATION_SPEED)
+                else:
+                    print(f"DEBUG: Rotating by negative {delta_rotation}")
+                    body.angle -= max(delta_rotation, -BEETLE_ROTATION_SPEED)
+                pass
 
     def damage(self, damage):
         self.hit_points -= damage
