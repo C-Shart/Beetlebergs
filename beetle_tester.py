@@ -70,8 +70,8 @@ class BeetleTestes(arcade.Window):
         def pea_handler(pea_sprite, beetle_sprite, _arbiter, _space, _data):
             if pea_sprite.team_color == beetle_sprite.team_color:
                 return False
-            beetle_sprite.remove_from_sprite_lists()
             pea_sprite.remove_from_sprite_lists()
+            # TODO: Damage beetle
             return True
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
