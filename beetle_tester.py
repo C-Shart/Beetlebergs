@@ -1,5 +1,7 @@
 import arcade
+import arcade.gui
 import attacks
+from enum import Enum
 import math
 from teams import Team
 from team_color import TeamColor
@@ -24,6 +26,17 @@ class BeetleTestes(arcade.Window):
         self.red_team = None
 
         self.physics_engine = None
+
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+        self.settings_box = arcade.gui.UIBoxLayout()
+
+        self.mode = __class__.TesterMode.SHOOTING
+        self.mode_button = arcade.gui.UIFlatButton(text="Shooting", width=200)
+        self.mode_button.on_click = self.on_click_mode
+
+        self.settings_box.add(self.mode_button.with_space_around(bottom=20))
+        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
 
     def setup(self):
         self.background = arcade.load_texture("Assets/Images/octagon.png")
@@ -62,17 +75,29 @@ class BeetleTestes(arcade.Window):
 
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
-        x_distance = x - beetle.center_x
-        y_distance = y - beetle.center_y
-        angle = (math.degrees(math.atan2(y_distance, x_distance)))
-        projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
-        self.projectiles_list.append(projectile)
-        self.physics_engine.add_sprite_list(self.projectiles_list,
-            elasticity = 0.1,
-            collision_type = "pea"
-        )
-        # TODO: Figure out how to decouple the sprite angle & the shot angle. Currently sprites are rotated 270 degrees
-        # from their flight path.
+        if self.mode == __class__.TesterMode.SHOOTING:
+            x_distance = x - beetle.center_x
+            y_distance = y - beetle.center_y
+            angle = (math.degrees(math.atan2(y_distance, x_distance)))
+            projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
+            self.projectiles_list.append(projectile)
+            self.physics_engine.add_sprite_list(self.projectiles_list,
+                elasticity = 0.1,
+                collision_type = "pea"
+            )
+            # TODO: Figure out how to decouple the sprite angle & the shot angle. Currently sprites are rotated 270 degrees
+            # from their flight path.
+        elif self.mode == __class__.TesterMode.MOVING:
+            # TODO pass in click as movement location for beetle.
+            print(f"Moving {'Green' if beetle.team_color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
+
+    def on_click_mode(self, event):
+        if self.mode == __class__.TesterMode.SHOOTING:
+            self.mode = __class__.TesterMode.MOVING
+            self.mode_button.text = "Moving"
+        elif self.mode == __class__.TesterMode.MOVING:
+            self.mode = __class__.TesterMode.SHOOTING
+            self.mode_button.text = "Shooting"
 
     def on_draw(self):
         arcade.start_render()
@@ -80,12 +105,17 @@ class BeetleTestes(arcade.Window):
         self.green_team.on_draw()
         self.red_team.on_draw()
         self.projectiles_list.draw()
+        self.manager.draw()
 
     def on_update(self, delta_time):
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
         self.projectiles_list.on_update(delta_time)
         self.physics_engine.step()
+
+    class TesterMode(Enum):
+        SHOOTING = 0,
+        MOVING = 1
 
 if __name__ == "__main__":
     app = BeetleTestes()
