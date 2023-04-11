@@ -38,17 +38,21 @@ class BeetleTestes(arcade.Window):
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
         self.physics_engine.add_sprite_list(self.green_team.beetles,
-                    elasticity = 0.0,
-                    friction = 0.8,
-                    moment_of_intertia = 1,
-                    collision_type="green_beetle"
-                    )
+                                            mass = 1,
+                                            elasticity = 0.0,
+                                            friction = 0.8,
+                                            moment_of_intertia = 1,
+                                            damping = 1.0,
+                                            collision_type="green_beetle"
+                                            )
         self.physics_engine.add_sprite_list(self.red_team.beetles,
-                    elasticity = 0.0,
-                    friction = 0.8,
-                    moment_of_intertia = 1,
-                    collision_type="red_beetle"
-                    )
+                                            mass = 1,
+                                            elasticity = 0.0,
+                                            friction = 0.8,
+                                            moment_of_intertia = 1,
+                                            damping = 1.0,
+                                            collision_type="red_beetle"
+                                            )
 
         def hit_handler(sprite_a, sprite_b, arbiter, space, data):
             first_shape = arbiter.shapes[0]
