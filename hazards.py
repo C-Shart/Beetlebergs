@@ -10,7 +10,10 @@ class Hazard(arcade.Sprite):
 
     @property
     def physics_engine(self):
-        return self.physics_engines[0]
+        if len(self.physics_engines) > 0:
+            return self.physics_engines[0]
+        else:
+            return None
 
     def on_draw(self):
         # TODO: handle drawing the hazard
