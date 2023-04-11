@@ -7,7 +7,7 @@ BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
 BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
 BEETLE_SCALING = 1
 BEETLE_MOVE_FORCE = 500
-BEETLE_ROTATION_SPEED = 0.017453
+BEETLE_ROTATION_SPEED = math.pi / 8.0
 
 DEFAULT_HIT_POINTS = 100
 DEFAULT_MAX_FORWARD = 150.0
@@ -36,7 +36,7 @@ class Beetle(arcade.Sprite):
         self.awareness = DEFAULT_AWARENESS
         self.vision = DEFAULT_VISION
         self.accuracy = DEFAULT_ACCURACY
-        self.angle = 270.0 if team.color == TeamColor.GREEN else 90.0
+        self.angle = -90.0 if team.color == TeamColor.GREEN else 90.0
         self.force = 0
         self.target_facing = None
         self.target_moving = None
@@ -58,7 +58,9 @@ class Beetle(arcade.Sprite):
         self.move_target = (target_x, target_y)
         delta_x = target_x - self.center_x
         delta_y = target_y - self.center_y
-        self.angle_target = math.atan2(delta_y, delta_x) - (math.pi / 2)
+        self.angle_target = math.atan2(delta_y, delta_x) - math.pi / 2.0
+        if self.angle_target < -math.pi:
+            self.angle_target += math.pi * 2.0
 
     def on_draw(self):
         # TODO: handle drawing the beetle
@@ -89,19 +91,13 @@ class Beetle(arcade.Sprite):
 
             if self.angle_target:
                 body = self.physics_engine.sprites[self].body
-                while body.angle < -2.0 * math.pi:
-                    body.angle += 2.0 * math.pi
-                while body.angle > 2.0 * math.pi:
-                    body.angle -= 2.0 * math.pi
                 delta_rotation = self.angle_target - body.angle
-                print(f"DEBUG: {self.angle_target} - {body.angle} = {delta_rotation}")
                 if abs(delta_rotation) < 0.0000005:
                     self.target_angle = None
                 elif delta_rotation >= 0.0:
-                    body.angle -= min(delta_rotation, BEETLE_ROTATION_SPEED)
+                    body.angle += min(delta_rotation, BEETLE_ROTATION_SPEED)
                 else:
-                    print(f"DEBUG: Rotating by negative {delta_rotation}")
-                    body.angle -= max(delta_rotation, -BEETLE_ROTATION_SPEED)
+                    body.angle += max(delta_rotation, -BEETLE_ROTATION_SPEED)
                 pass
 
     def damage(self, damage):
