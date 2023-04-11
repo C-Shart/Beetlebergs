@@ -56,7 +56,7 @@ class BeetleTestes(arcade.Window):
                                             friction = 0.8,
                                             moment_of_intertia = 1,
                                             damping = 1.0,
-                                            collision_type="green_beetle"
+                                            collision_type="beetle"
                                             )
         self.physics_engine.add_sprite_list(self.red_team.beetles,
                                             mass = 1,
@@ -64,25 +64,17 @@ class BeetleTestes(arcade.Window):
                                             friction = 0.8,
                                             moment_of_intertia = 1,
                                             damping = 1.0,
-                                            collision_type="red_beetle"
+                                            collision_type="beetle"
                                             )
 
-        def hit_handler(sprite_a, sprite_b, arbiter, space, data):
-            first_shape = arbiter.shapes[0]
-            second_shape = arbiter.shapes[1]
-            sprite = self.physics_engine.get_sprite_for_shape(second_shape) if first_shape == "pea" else self.physics_engine.get_sprite_for_shape(first_shape)
-            sprite.remove_from_sprite_lists()
+        def pea_handler(pea_sprite, beetle_sprite, _arbiter, _space, _data):
+            if pea_sprite.team_color == beetle_sprite.team_color:
+                return False
+            beetle_sprite.remove_from_sprite_lists()
+            pea_sprite.remove_from_sprite_lists()
             return True
 
-        def nohit_handler(sprite_a, sprite_b, arbiter, space, data):
-            return False
-
-        self.physics_engine.add_collision_handler("green_pea", "green_beetle", nohit_handler)
-        self.physics_engine.add_collision_handler("red_pea", "green_beetle", hit_handler)
-        self.physics_engine.add_collision_handler("green_pea", "red_beetle", hit_handler)
-        self.physics_engine.add_collision_handler("red_pea", "red_beetle", nohit_handler)
-
-        self.physics_engine.add_collision_handler("pea", "pea", nohit_handler)
+        self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
 
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
@@ -92,10 +84,7 @@ class BeetleTestes(arcade.Window):
             angle = (math.degrees(math.atan2(y_distance, x_distance)))
             projectile = attacks.Peashooter.projectile(beetle.center_x, beetle.center_y, angle, beetle)
             self.projectiles_list.append(projectile)
-            self.physics_engine.add_sprite_list(self.projectiles_list,
-                                                elasticity = 0.1,
-                                                collision_type = "red_pea" if beetle.team_color == TeamColor.RED else "green_pea"
-                                                )
+            self.physics_engine.add_sprite_list(self.projectiles_list, elasticity = 0.1, collision_type = "pea")
         elif self.mode == __class__.TesterMode.MOVING:
             # TODO pass in click as movement location for beetle.
             print(f"Moving {'Green' if beetle.team_color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
