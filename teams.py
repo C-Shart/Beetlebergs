@@ -16,7 +16,6 @@ class Team:
             self.sprite_list.append(beetle)
 
     def set_up_team(self):
-        # TODO: Responsible for preparing the beetles for battle, refreshing their health, resetting their positions.
         beetle_ability_traits = []
         for trait in self.traits:
             if trait.ability is None:
@@ -30,7 +29,6 @@ class Team:
             for trait in beetle_ability_traits:
                 beetle.abilities.append(trait.ability(beetle))
             # TODO: Reset positions
-            
             # TODO: Randomize positions? (i.e. randomized positions within a group on each side)
 
 
