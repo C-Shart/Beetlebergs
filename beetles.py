@@ -40,6 +40,10 @@ class Beetle(arcade.Sprite):
     @property
     def physics_engine(self):
         return self.physics_engines[0]
+    
+    def move_to(x, y):
+        
+        pass
 
     def on_draw(self):
         # TODO: handle drawing the beetle
