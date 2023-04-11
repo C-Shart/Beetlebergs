@@ -256,6 +256,7 @@ together, and realizing that if θ is 90 - `angle`, then it is the other angle i
 Thus this is some pseudo-code for handling movement.
 
 ### Beetle Movement Logic Diagram
+
 ```mermaid
 stateDiagram-v2
 FACING : FACING\nBeetle is always facing target.\nTargets in priority order are\nEnemy Beetle\ndestination (boon, ally, location, etc.)
@@ -282,7 +283,7 @@ MANEUVERS : MANEUVERS\nBeetle can access a list of move-based maneuvers\ne.g. "m
 Moving --> [*]
 ```
 
-Prototype proposal for movement logic. This is basically what will eventually replace the mouseclicks to move.
+Prototype proposal for movement logic. This is basically what will eventually replace the mouse clicks to move.
 
 ### Beetle Stats
 
