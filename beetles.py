@@ -17,11 +17,11 @@ DEFAULT_VISION = 25
 DEFAULT_ACCURACY = 25
 
 class Beetle(arcade.Sprite):
-    def __init__(self, team_color, center_x, center_y):
-        path = BEETLE_SPRITE_PATH_GREEN if team_color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
+    def __init__(self, team, center_x, center_y):
+        path = BEETLE_SPRITE_PATH_GREEN if team.color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
         super().__init__(path, BEETLE_SCALING)
+        self.team = team
         self.scale = BEETLE_SCALING
-        self.team_color = team_color
         self.center_x = center_x
         self.center_y = center_y
         self.abilities = []
@@ -35,18 +35,21 @@ class Beetle(arcade.Sprite):
         self.awareness = DEFAULT_AWARENESS
         self.vision = DEFAULT_VISION
         self.accuracy = DEFAULT_ACCURACY
-        self.angle = 270.0 if team_color == TeamColor.GREEN else 90.0
+        self.angle = 270.0 if team.color == TeamColor.GREEN else 90.0
         self.force = 0
         self.target_facing = None
         self.target_moving = None
         self.is_moving = None
         self.x_velocity = 0
         self.y_velocity = 0
-
+        self.firing_target = None
     @property
     def physics_engine(self):
-        return self.physics_engines[0]
-    
+        if len(self.physics_engines) > 0:
+            return self.physics_engines[0]
+        else:
+            return None
+
     def move_to(self, click_x, click_y):
         delta_x = click_x - self.center_x
         delta_y = click_y - self.center_y
@@ -79,7 +82,7 @@ class Beetle(arcade.Sprite):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
         for ability in self.abilities:
-            ability.on_update(delta_time, self)
+            ability.on_update(delta_time)
         if self.hit_points <= 0:
             self.remove_from_sprite_lists()
 

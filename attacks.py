@@ -44,8 +44,10 @@ class RangedAttack(Attack):
         # TODO: To perform the atack with given beetle during each frame, if needed
 
 class Peashooter(RangedAttack):
-    def __init__(self):
-        super().__init__()
+    PEASHOOTER_COOLDOWN = 0.125
+
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
 
     def on_draw(self):
         super().on_draw()
@@ -53,7 +55,16 @@ class Peashooter(RangedAttack):
 
     def on_update(self, delta_time):
         super().on_update(delta_time)
-        # TODO: To perform the atack with given beetle during each frame, if needed
+        beetle = self.acting_beetle
+        if self.ready_to_fire:
+            x, y = beetle.firing_target
+            x_distance = x - beetle.center_x
+            y_distance = y - beetle.center_y
+            angle = (math.degrees(math.atan2(y_distance, x_distance)))
+            projectile = __class__.projectile(beetle.center_x, beetle.center_y, angle, beetle)
+            beetle.team.projectiles_list.append(projectile)
+            beetle.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
+            self.cooldown = __class__.PEASHOOTER_COOLDOWN
 
     class trait(Trait):
         def __init__(self):
@@ -63,13 +74,13 @@ class Peashooter(RangedAttack):
         SPRITE_PATH_GREEN = "Assets/Sprites/Attributed/bullet_bw_green.png"
         SPRITE_PATH_RED = "Assets/Sprites/Attributed/bullet_bw_red.png"
         DEFAULT_PEA_VELOCITY_MULTIPLIER = 500.0
-        PEA_POWER = 20
+        PEA_POWER = 1
 
         def __init__(self, center_x, center_y, angle, acting_beetle):
             path = __class__.SPRITE_PATH_GREEN
-            if acting_beetle.team_color != TeamColor.GREEN:
+            if acting_beetle.team.color != TeamColor.GREEN:
                 path = __class__.SPRITE_PATH_RED
-            super().__init__(path, center_x, center_y, angle, __class__.PEA_POWER, team_color=acting_beetle.team_color)
+            super().__init__(path, center_x, center_y, angle, __class__.PEA_POWER, team_color=acting_beetle.team.color)
             self.angle = angle
 
             x_velocity = math.cos(self.radians) * __class__.DEFAULT_PEA_VELOCITY_MULTIPLIER
@@ -79,19 +90,11 @@ class Peashooter(RangedAttack):
             # Fixes the angle of the sprite itself, avoiding changing the velocity vector
             self.angle -= 90.0
 
-        def setup(self):
-            # Commenting out for now since it's in on_mouse_press, but I think we're moving it back here eventually?
-            """ self.peas_list = arcade.SpriteList()
-            self.peas_list.append()
-            self.physics_engine.add_sprite_list(self.peas_list,
-                collision_type = "pea",
-                elasticity = 0.1
-            ) """
-
         def on_draw(self):
             super().on_draw()
             # TODO: Draw the attack
 
         def on_update(self, delta_time):
             super().on_update(delta_time)
-            self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))
+            if self.enabled:
+                self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))
