@@ -88,7 +88,7 @@ class BeetleTestes(arcade.Window):
         elif self.mode == __class__.TesterMode.MOVING:
             # TODO pass in click as movement location for beetle.
             beetle.move_to(x, y)
-            print(f"Moving {'Green' if beetle.team_color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
+            print(f"Moving {'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
 
     def on_click_mode(self, event):
         if self.mode == __class__.TesterMode.SHOOTING:
