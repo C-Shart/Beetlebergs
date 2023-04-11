@@ -79,15 +79,6 @@ class Peashooter(RangedAttack):
             # Fixes the angle of the sprite itself, avoiding changing the velocity vector
             self.angle -= 90.0
 
-        def setup(self):
-            # Commenting out for now since it's in on_mouse_press, but I think we're moving it back here eventually?
-            """ self.peas_list = arcade.SpriteList()
-            self.peas_list.append()
-            self.physics_engine.add_sprite_list(self.peas_list,
-                collision_type = "pea",
-                elasticity = 0.1
-            ) """
-
         def on_draw(self):
             super().on_draw()
             # TODO: Draw the attack
