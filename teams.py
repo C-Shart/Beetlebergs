@@ -51,10 +51,6 @@ class Team:
             for trait in beetle_ability_traits:
                 beetle.abilities.append(trait.ability(beetle))
 
-    def make_active(self):
-        # TODO: Write activation code.
-        pass
-
     def on_draw(self):
         for beetle in self.sprite_list:
             beetle.draw()
