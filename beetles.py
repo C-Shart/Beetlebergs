@@ -20,7 +20,6 @@ DEFAULT_ACCURACY = 25
 class Beetle(arcade.Sprite):
     def __init__(self, team, center_x, center_y):
         path = BEETLE_SPRITE_PATH_GREEN if team.color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
-        delta_rotation = float
         super().__init__(path, BEETLE_SCALING)
         self.team = team
         self.scale = BEETLE_SCALING
@@ -76,8 +75,8 @@ class Beetle(arcade.Sprite):
         return self.get_sprite_adjusted_angle_rad(math.atan2(delta_y, delta_x))
 
     def decide_facing(self, delta_time):
-        if not self.angle_target and self.facing_cooldown <= 0.0:
-            self.facing_cooldown = 0.0
+        if self.facing_cooldown <= 0.0:
+            self.facing_cooldown = 1.0
             self.angle_target = random.uniform(-math.pi, math.pi)
         elif self.facing_cooldown > 0.0:
             self.facing_cooldown -= delta_time
@@ -104,6 +103,7 @@ class Beetle(arcade.Sprite):
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
+
         if self.active:
             self.decide_facing(delta_time)
             self.decide_position()
@@ -133,7 +133,6 @@ class Beetle(arcade.Sprite):
                 delta_rotation = self.angle_target - body.angle
                 if abs(delta_rotation) < 0.0000005:
                     self.angle_target = None
-                    self.facing_cooldown = 1.0
                 elif delta_rotation >= 0.0:
                     body.angle += min(delta_rotation, BEETLE_ROTATION_SPEED)
                 else:
