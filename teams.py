@@ -22,9 +22,13 @@ class Team:
     def active(self, value):
         for beetle in self.beetles:
             beetle.active = value
+            if not value:
+                beetle.move_target = None
+                beetle.physics_engine and beetle.physics_engine.set_velocity(beetle, (0.0, 0.0))
         self._active = value
 
     def set_up_team(self):
+        self.active = False
         self.sprite_list.clear()
         self.projectiles_list.clear()
 

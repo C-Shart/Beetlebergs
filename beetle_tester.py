@@ -53,9 +53,11 @@ class BeetleTestes(arcade.Window):
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
+        self.green_auto_button.text = "Make Green Autonomous"
 
         self.red_team = Team(TeamColor.RED, 960, 260)
         self.red_team.set_up_team()
+        self.red_auto_button.text = "Make Red Autonomous"
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
@@ -140,7 +142,6 @@ class BeetleTestes(arcade.Window):
         self.green_team.on_draw()
         self.red_team.on_draw()
         self.manager.draw()
-
 
     def on_update(self, delta_time):
         self.green_team.on_update(delta_time)
