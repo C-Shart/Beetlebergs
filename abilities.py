@@ -1,12 +1,12 @@
 class Ability:
     def __init__(self, acting_beetle):
         self.acting_beetle = acting_beetle
-        self.enabled = False
+        self.active = False
         self.cooldown = 0.0
 
     @property
     def ready_to_fire(self):
-        return self.enabled and self.cooldown <= 0.0
+        return self.active and self.cooldown <= 0.0
 
     def draw(self):
         # TODO: Draw the ability

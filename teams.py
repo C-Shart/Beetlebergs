@@ -25,6 +25,8 @@ class Team:
             if not value:
                 beetle.move_target = None
                 beetle.physics_engine and beetle.physics_engine.set_velocity(beetle, (0.0, 0.0))
+                for ability in beetle.abilities:
+                    ability.active = False
         self._active = value
 
     def set_up_team(self):

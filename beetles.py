@@ -57,13 +57,22 @@ class Beetle(arcade.Sprite):
         else:
             return None
 
-    def get_angle_to_location(self, target_x, target_y):
-        delta_x = target_x - self.center_x
-        delta_y = target_y - self.center_y
-        angle = math.atan2(delta_y, delta_x) - math.pi / 2.0
+    def get_sprite_adjusted_angle_deg(_self, angle):
+        angle += 90.0 # TODO: Why is this one plus?
+        if angle < -180.0:
+            angle += 360.0
+        return angle
+
+    def get_sprite_adjusted_angle_rad(_self, angle):
+        angle -= math.pi / 2.0
         if angle < -math.pi:
             angle += math.pi * 2.0
         return angle
+
+    def get_angle_to_location(self, target_x, target_y):
+        delta_x = target_x - self.center_x
+        delta_y = target_y - self.center_y
+        return self.get_sprite_adjusted_angle_rad(math.atan2(delta_y, delta_x))
 
     def decide_facing(self, delta_time):
         if not self.angle_target and self.facing_cooldown <= 0.0:
@@ -100,6 +109,8 @@ class Beetle(arcade.Sprite):
 
         for ability in self.abilities:
             ability.on_update(delta_time)
+            ability.active = self.active
+
         if self.hit_points <= 0:
             self.remove_from_sprite_lists()
         else:

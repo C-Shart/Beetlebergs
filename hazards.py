@@ -7,7 +7,7 @@ class Hazard(arcade.Sprite):
         self.center_x = center_x
         self.center_y = center_y
         self.team_color = team_color
-        self.enabled = True
+        self.active = True
 
     @property
     def physics_engine(self):
@@ -50,7 +50,7 @@ class Projectile(Hazard):
         super().on_update(delta_time)
         if self.center_x <= __class__.MIN_X or self.center_x >= __class__.MAX_X:
             self.remove_from_sprite_lists()
-            self.enabled = False
+            self.active = False
         elif self.center_y <= __class__.MIN_Y or self.center_y >= __class__.MAX_Y:
             self.remove_from_sprite_lists()
-            self.enabled = False
+            self.active = False
