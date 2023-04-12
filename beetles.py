@@ -20,6 +20,7 @@ DEFAULT_ACCURACY = 25
 class Beetle(arcade.Sprite):
     def __init__(self, team, center_x, center_y):
         path = BEETLE_SPRITE_PATH_GREEN if team.color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
+        delta_rotation = float
         super().__init__(path, BEETLE_SCALING)
         self.team = team
         self.scale = BEETLE_SCALING
