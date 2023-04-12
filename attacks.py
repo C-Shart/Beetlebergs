@@ -19,8 +19,8 @@ class Attack(Ability):
         self.number_of_attacks = 1
         self.time_since_last = 0.0
 
-    def on_draw(self):
-        super().on_draw()
+    def draw(self):
+        super().draw()
         # TODO: Draw the attack
 
     def on_update(self, delta_time):
@@ -32,8 +32,8 @@ class RangedAttack(Attack):
     def __init__(self, acting_beetle):
         super().__init__(acting_beetle)
 
-    def on_draw(self):
-        super().on_draw()
+    def draw(self):
+        super().draw()
         # TODO: Draw the attack
 
     def on_update(self, delta_time):
@@ -49,8 +49,8 @@ class Peashooter(RangedAttack):
     def __init__(self, acting_beetle):
         super().__init__(acting_beetle)
 
-    def on_draw(self):
-        super().on_draw()
+    def draw(self):
+        super().draw()
         # TODO: Draw the attack
 
     def on_update(self, delta_time):
@@ -90,8 +90,8 @@ class Peashooter(RangedAttack):
             # Fixes the angle of the sprite itself, avoiding changing the velocity vector
             self.angle -= 90.0
 
-        def on_draw(self):
-            super().on_draw()
+        def draw(self):
+            super().draw()
             # TODO: Draw the attack
 
         def on_update(self, delta_time):

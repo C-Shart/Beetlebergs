@@ -8,7 +8,7 @@ class Ability:
     def ready_to_fire(self):
         return self.enabled and self.cooldown <= 0.0
 
-    def on_draw(self):
+    def draw(self):
         # TODO: Draw the ability
         pass
 

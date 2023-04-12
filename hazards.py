@@ -16,9 +16,9 @@ class Hazard(arcade.Sprite):
         else:
             return None
 
-    def on_draw(self):
+    def draw(self):
         # TODO: handle drawing the hazard
-        super().on_draw()
+        super().draw()
 
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the hazard, performing its actions during battle
@@ -41,9 +41,9 @@ class Projectile(Hazard):
         self.forward_speed = 0.0
         self.sideways_speed = 0.0
 
-    def on_draw(self):
+    def draw(self):
         # TODO: handle drawing the projectile
-        super().on_draw()
+        super().draw()
 
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the projectile, performing its actions during battle

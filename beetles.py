@@ -61,11 +61,11 @@ class Beetle(arcade.Sprite):
         if self.angle_target < -math.pi:
             self.angle_target += math.pi * 2.0
 
-    def on_draw(self):
+    def draw(self):
         # TODO: handle drawing the beetle
-        super().on_draw()
+        super().draw()
         for ability in self.abilities:
-            ability.on_draw()
+            ability.draw()
 
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
