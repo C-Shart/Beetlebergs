@@ -68,6 +68,10 @@ class Beetle(arcade.Sprite):
         # TODO: Write facing logic.
         pass
 
+    def decide_position(self):
+        if not self.move_target:
+            self.move_target = (random.randrange(0, 1280), random.randrange(0, 720))
+
     def set_facing(self, target_x, target_y):
         self.angle_target = self.get_angle_to_location(target_x, target_y)
 
@@ -88,6 +92,7 @@ class Beetle(arcade.Sprite):
         super().on_update(delta_time)
         if self.active:
             self.decide_facing()
+            self.decide_position()
 
         for ability in self.abilities:
             ability.on_update(delta_time)
