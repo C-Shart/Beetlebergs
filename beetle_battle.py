@@ -8,13 +8,9 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Welcome to the Ouch, Motherfucker"
 
-class BeetleBattle(arcade.Window):
+class BeetleBattle(arcade.View):
     def __init__(self):
-
-        # Call the parent class constructor
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-
-        arcade.set_background_color(arcade.color.WHITE)
+        super().__init__()
 
         self.background = None
 
@@ -37,8 +33,12 @@ class BeetleBattle(arcade.Window):
         self.settings_box.add(self.reset_button.with_space_around(bottom=20))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
 
-    def setup(self):
+    def on_show_view(self):
+        arcade.set_background_color(arcade.color.WHITE)
         self.background = arcade.load_texture("Assets/Images/octagon.png")
+        arcade.set_viewport(0, self.window.width, 0, self.window.height)
+
+    def setup(self):
         self.start_match_button.text = "Start Beetle Battle!"
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
@@ -104,6 +104,8 @@ class BeetleBattle(arcade.Window):
         self.physics_engine.resync_sprites()
 
 if __name__ == "__main__":
-    app = BeetleBattle()
-    app.setup()
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    battle_view = BeetleBattle()
+    window.show_view(battle_view)
+    battle_view.setup()
     arcade.run()
