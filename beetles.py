@@ -88,7 +88,6 @@ class Beetle(arcade.Sprite):
         if self.hit_points <= 0:
             self.remove_from_sprite_lists()
         else:
-            self.set_facing()
             if self.move_target:
                 target_x, target_y = self.move_target
                 delta_x = target_x - self.center_x

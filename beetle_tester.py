@@ -93,9 +93,12 @@ class BeetleTestes(arcade.Window):
             beetle.firing_target = (x, y) if peashooter_ability.enabled else None
 
         elif self.mode == __class__.TesterMode.MOVING:
-            # TODO pass in click as movement location for beetle.
-            beetle.move_to(x, y)
-            print(f"Moving {'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
+            if modifiers & arcade.key.MOD_SHIFT:
+                beetle.set_facing(x, y)
+                print(f"Turning {'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle towards {x}, {y}!")
+            else:
+                beetle.move_to(x, y)
+                print(f"Moving {'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
 
     def on_click_mode(self, event):
         if self.mode == __class__.TesterMode.SHOOTING:
