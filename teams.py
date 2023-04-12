@@ -42,8 +42,11 @@ class Team:
 
 
     def on_draw(self):
-        # TODO: Draws the team
+        for beetle in self.sprite_list:
+            beetle.draw()
         self.sprite_list.draw()
+        for projectile in self.projectiles_list:
+            projectile.draw()
         self.projectiles_list.draw()
 
     def on_update(self, delta_time):
