@@ -65,8 +65,8 @@ class Beetle(arcade.Sprite):
         return angle
 
     def decide_facing(self):
-        # TODO: Write facing logic.
-        pass
+        if not self.angle_target:
+            self.angle_target = random.uniform(-math.pi, math.pi)
 
     def decide_position(self):
         if not self.move_target:
@@ -116,7 +116,7 @@ class Beetle(arcade.Sprite):
                 body = self.physics_engine.sprites[self].body
                 delta_rotation = self.angle_target - body.angle
                 if abs(delta_rotation) < 0.0000005:
-                    self.target_angle = None
+                    self.angle_target = None
                 elif delta_rotation >= 0.0:
                     body.angle += min(delta_rotation, BEETLE_ROTATION_SPEED)
                 else:
