@@ -57,10 +57,13 @@ class Peashooter(RangedAttack):
         super().on_update(delta_time)
         beetle = self.acting_beetle
         if self.ready_to_fire:
-            x, y = beetle.firing_target
-            x_distance = x - beetle.center_x
-            y_distance = y - beetle.center_y
-            angle = (math.degrees(math.atan2(y_distance, x_distance)))
+            angle = beetle.get_sprite_adjusted_angle_deg(beetle.angle)
+            if beetle.firing_target:
+                x, y = beetle.firing_target
+                x_distance = x - beetle.center_x
+                y_distance = y - beetle.center_y
+                angle = math.degrees(math.atan2(y_distance, x_distance))
+
             projectile = __class__.projectile(beetle.center_x, beetle.center_y, angle, beetle)
             beetle.team.projectiles_list.append(projectile)
             beetle.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
@@ -96,5 +99,5 @@ class Peashooter(RangedAttack):
 
         def on_update(self, delta_time):
             super().on_update(delta_time)
-            if self.enabled:
+            if self.active:
                 self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))

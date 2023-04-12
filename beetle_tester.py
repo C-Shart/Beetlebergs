@@ -34,10 +34,17 @@ class BeetleTestes(arcade.Window):
         self.mode_button = arcade.gui.UIFlatButton(text="Shooting", width=200)
         self.mode_button.on_click = self.on_click_mode
 
+        self.green_auto_button = arcade.gui.UIFlatButton(text="Make Green Autonomous", width = 200)
+        self.red_auto_button = arcade.gui.UIFlatButton(text="Make Red Autonomous", width = 200)
+        self.green_auto_button.on_click = self.on_click_auto_green
+        self.red_auto_button.on_click = self.on_click_auto_red
+
         self.reset_button = arcade.gui.UIFlatButton(text="Reset", width = 200)
         self.reset_button.on_click = self.on_click_reset
 
         self.settings_box.add(self.mode_button.with_space_around(bottom=20))
+        self.settings_box.add(self.green_auto_button.with_space_around(bottom=20))
+        self.settings_box.add(self.red_auto_button.with_space_around(bottom=20))
         self.settings_box.add(self.reset_button.with_space_around(bottom=20))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
 
@@ -46,9 +53,11 @@ class BeetleTestes(arcade.Window):
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
+        self.green_auto_button.text = "Make Green Autonomous"
 
         self.red_team = Team(TeamColor.RED, 960, 260)
         self.red_team.set_up_team()
+        self.red_auto_button.text = "Make Red Autonomous"
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
@@ -70,12 +79,15 @@ class BeetleTestes(arcade.Window):
                                             )
 
         def pea_handler(pea, beetle, _arbiter, _space, _data):
-            if pea.team_color == beetle.team.color:
+            if pea and beetle:
+                if pea.team_color == beetle.team.color:
+                    return False
+                pea.remove_from_sprite_lists()
+                beetle.damage(pea.power)
+                print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
+                return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
+            else:
                 return False
-            pea.remove_from_sprite_lists()
-            beetle.damage(pea.power)
-            print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
-            return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
 
@@ -86,13 +98,17 @@ class BeetleTestes(arcade.Window):
         angle = (math.degrees(math.atan2(y_distance, x_distance)))
         if self.mode == __class__.TesterMode.SHOOTING:
             peashooter_ability = beetle.abilities[0]
-            peashooter_ability.enabled = not peashooter_ability.enabled
-            beetle.firing_target = (x, y) if peashooter_ability.enabled else None
+            peashooter_ability.active = not peashooter_ability.active
+            beetle.firing_target = (x, y) if peashooter_ability.active else None
+            # TODO: Turning on the peashooter like this doesn't stick because the beetle is never made active. Fix this.
 
         elif self.mode == __class__.TesterMode.MOVING:
-            # TODO pass in click as movement location for beetle.
-            beetle.move_to(x, y)
-            print(f"Moving {'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
+            if modifiers & arcade.key.MOD_SHIFT:
+                beetle.set_facing(x, y)
+                print(f"Turning {'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle towards {x}, {y}!")
+            else:
+                beetle.move_to(x, y)
+                print(f"Moving {'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle to {x}, {y}!")
 
     def on_click_mode(self, event):
         if self.mode == __class__.TesterMode.SHOOTING:
@@ -101,6 +117,22 @@ class BeetleTestes(arcade.Window):
         elif self.mode == __class__.TesterMode.MOVING:
             self.mode = __class__.TesterMode.SHOOTING
             self.mode_button.text = "Shooting"
+
+    def on_click_auto_red(self, event):
+        self.on_click_auto(event, TeamColor.RED)
+
+    def on_click_auto_green(self, event):
+        self.on_click_auto(event, TeamColor.GREEN)
+
+    def on_click_auto(self, event, team_color):
+        team = self.green_team if team_color == TeamColor.GREEN else self.red_team
+        button = self.green_auto_button if team_color == TeamColor.GREEN else self.red_auto_button
+        team_name = "Green" if team_color == TeamColor.GREEN else "Red"
+        team.active = not team.active
+        if team.active:
+            button.text = f"{team_name.upper()} TEAM AUTO ON"
+        else:
+            button.text = f"Make {team_name} Autonomous"
 
     def on_click_reset(self, _event):
         self.setup()

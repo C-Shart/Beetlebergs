@@ -12,8 +12,25 @@ class Team:
         self.sprite_list = arcade.SpriteList()
         self.projectiles_list = arcade.SpriteList()
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
+        self.active = False
+
+    @property
+    def active(self):
+        return self._active
+
+    @active.setter
+    def active(self, value):
+        for beetle in self.beetles:
+            beetle.active = value
+            if not value:
+                beetle.move_target = None
+                beetle.physics_engine and beetle.physics_engine.set_velocity(beetle, (0.0, 0.0))
+                for ability in beetle.abilities:
+                    ability.active = False
+        self._active = value
 
     def set_up_team(self):
+        self.active = False
         self.sprite_list.clear()
         self.projectiles_list.clear()
 
@@ -39,7 +56,6 @@ class Team:
             beetle.angle = -90.0 if self.color == TeamColor.GREEN else 90.0
             for trait in beetle_ability_traits:
                 beetle.abilities.append(trait.ability(beetle))
-
 
     def on_draw(self):
         for beetle in self.sprite_list:
