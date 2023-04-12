@@ -14,6 +14,16 @@ class Team:
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
         self.active = False
 
+    @property
+    def active(self):
+        return self._active
+
+    @active.setter
+    def active(self, value):
+        for beetle in self.beetles:
+            beetle.active = value
+        self._active = value
+
     def set_up_team(self):
         self.sprite_list.clear()
         self.projectiles_list.clear()

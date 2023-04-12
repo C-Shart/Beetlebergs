@@ -34,17 +34,17 @@ class BeetleTestes(arcade.Window):
         self.mode_button = arcade.gui.UIFlatButton(text="Shooting", width=200)
         self.mode_button.on_click = self.on_click_mode
 
-        self.green_team.autonomous = False
-        self.red_team.autonomous = False
         self.green_auto_button = arcade.gui.UIFlatButton(text="Make Green Autonomous", width = 200)
         self.red_auto_button = arcade.gui.UIFlatButton(text="Make Red Autonomous", width = 200)
-        self.green_auto_button.on_click = lambda s,e: s.on_click_auto(e, TeamColor.GREEN)
-        self.red_auto_button.on_click = lambda s,e: s.on_click_auto(e, TeamColor.RED)
+        self.green_auto_button.on_click = self.on_click_auto_green
+        self.red_auto_button.on_click = self.on_click_auto_red
 
         self.reset_button = arcade.gui.UIFlatButton(text="Reset", width = 200)
         self.reset_button.on_click = self.on_click_reset
 
         self.settings_box.add(self.mode_button.with_space_around(bottom=20))
+        self.settings_box.add(self.green_auto_button.with_space_around(bottom=20))
+        self.settings_box.add(self.red_auto_button.with_space_around(bottom=20))
         self.settings_box.add(self.reset_button.with_space_around(bottom=20))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
 
@@ -115,19 +115,21 @@ class BeetleTestes(arcade.Window):
             self.mode = __class__.TesterMode.SHOOTING
             self.mode_button.text = "Shooting"
 
+    def on_click_auto_red(self, event):
+        self.on_click_auto(event, TeamColor.RED)
+
+    def on_click_auto_green(self, event):
+        self.on_click_auto(event, TeamColor.GREEN)
+
     def on_click_auto(self, event, team_color):
-        if team_color == TeamColor.GREEN:
-            self.green_team.autonomous = not self.green_team.autonomous
-            if self.green_team.autonomous:
-                self.green_auto_button.text = "GREEN TEAM AUTO ON"
-            else:
-                self.green_auto_button.text = "Make Green Autonomous"
+        team = self.green_team if team_color == TeamColor.GREEN else self.red_team
+        button = self.green_auto_button if team_color == TeamColor.GREEN else self.red_auto_button
+        team_name = "Green" if team_color == TeamColor.GREEN else "Red"
+        team.active = not team.active
+        if team.active:
+            button.text = f"{team_name.upper()} TEAM AUTO ON"
         else:
-            self.red_team.autonomous = not self.red_team.autonomous
-            if self.red_team.autonomous:
-                self.red_auto_button.text = "RED TEAM AUTO ON"
-            else:
-                self.red_auto_button.text = "Make Red Autonomous"
+            button.text = f"Make {team_name} Autonomous"
 
     def on_click_reset(self, _event):
         self.setup()
