@@ -13,8 +13,8 @@ DEFAULT_HIT_POINTS = 100
 DEFAULT_MAX_FORWARD = 150.0
 DEFAULT_MAX_SIDEWAYS = 100.0
 DEFAULT_MAX_ROTATION = math.pi / 360.0
-DEFAULT_AWARENESS = 50
-DEFAULT_VISION = 25
+DEFAULT_AWARENESS = 1
+DEFAULT_VISION = 250
 DEFAULT_ACCURACY = 25
 
 class Beetle(arcade.Sprite):
@@ -36,6 +36,7 @@ class Beetle(arcade.Sprite):
         self.awareness = DEFAULT_AWARENESS
         self.vision = DEFAULT_VISION
         self.accuracy = DEFAULT_ACCURACY
+        self.angle = -90.0 if team.color == TeamColor.GREEN else 90.0
         self.force = 0
         self.target_facing = None
         self.target_moving = None
@@ -45,6 +46,7 @@ class Beetle(arcade.Sprite):
         self.move_target = None
         self.angle_target = None
         self.firing_target = None
+        self.known_enemies = None
 
     @property
     def physics_engine(self):
@@ -53,19 +55,35 @@ class Beetle(arcade.Sprite):
         else:
             return None
 
+    def beetle_finder(self):
+        # TODO: Function that locates the nearest beetle within radius X.
+        pass
+
+    def facing(self, target_x: None, target_y: None, enemy_x: None, enemy_y: None):
+        self.click_target = (target_x, target_y)
+        self.beetle_target = (enemy_x, enemy_y)
+        focus_x = target_x if enemy_x is None else enemy_x
+        focus_y = target_y if enemy_y is None else enemy_y
+        self.angle_target = math.atan2(focus_y, focus_x) - math.pi / 2.0
+        if self.angle_target < -math.pi:
+            self.angle_target += math.pi * 2.0
+
     def move_to(self, target_x, target_y):
         self.move_target = (target_x, target_y)
-        delta_x = target_x - self.center_x
+        """delta_x = target_x - self.center_x
         delta_y = target_y - self.center_y
         self.angle_target = math.atan2(delta_y, delta_x) - math.pi / 2.0
         if self.angle_target < -math.pi:
-            self.angle_target += math.pi * 2.0
+            self.angle_target += math.pi * 2.0 """
 
     def draw(self):
         # TODO: handle drawing the beetle
         super().draw()
         for ability in self.abilities:
             ability.draw()
+        # FOR TESTING PURPOSES
+        arcade.draw_circle_outline(self.center_x, self.center_y, DEFAULT_VISION, arcade.color.ELECTRIC_PURPLE, 2)
+
 
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle

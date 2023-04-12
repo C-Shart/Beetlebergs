@@ -112,6 +112,7 @@ class BeetleTestes(arcade.Window):
         self.red_team.on_draw()
         self.manager.draw()
 
+
     def on_update(self, delta_time):
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
