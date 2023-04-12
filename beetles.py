@@ -47,6 +47,7 @@ class Beetle(arcade.Sprite):
         self.angle_target = None
         self.firing_target = None
         self.known_enemies = None
+        self.active = False
 
     @property
     def physics_engine(self):

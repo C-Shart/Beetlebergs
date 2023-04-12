@@ -12,6 +12,7 @@ class Team:
         self.sprite_list = arcade.SpriteList()
         self.projectiles_list = arcade.SpriteList()
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
+        self.active = False
 
     def set_up_team(self):
         self.sprite_list.clear()
@@ -40,6 +41,9 @@ class Team:
             for trait in beetle_ability_traits:
                 beetle.abilities.append(trait.ability(beetle))
 
+    def make_active(self):
+        # TODO: Write activation code.
+        pass
 
     def on_draw(self):
         for beetle in self.sprite_list:
