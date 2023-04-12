@@ -7,7 +7,8 @@ BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
 BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
 BEETLE_SCALING = 1
 BEETLE_MOVE_FORCE = 500
-BEETLE_ROTATION_SPEED = math.pi / 8.0
+BEETLE_ROTATION_SPEED = math.pi
+BEETLE_ROTATION_EPSILON = math.pi / 90.0
 
 DEFAULT_HIT_POINTS = 100
 DEFAULT_MAX_FORWARD = 150.0
@@ -75,8 +76,8 @@ class Beetle(arcade.Sprite):
         return self.get_sprite_adjusted_angle_rad(math.atan2(delta_y, delta_x))
 
     def decide_facing(self, delta_time):
-        if self.facing_cooldown <= 0.0:
-            self.facing_cooldown = 1.0
+        if not self.angle_target and self.facing_cooldown <= 0.0:
+            self.facing_cooldown = 0.0
             self.angle_target = random.uniform(-math.pi, math.pi)
         elif self.facing_cooldown > 0.0:
             self.facing_cooldown -= delta_time
@@ -130,13 +131,21 @@ class Beetle(arcade.Sprite):
 
             if self.angle_target:
                 body = self.physics_engine.sprites[self].body
+
+                while body.angle > math.pi:
+                    body.angle -= 2.0 * math.pi
+                while body.angle < -math.pi:
+                    body.angle += 2.0 * math.pi
+
                 delta_rotation = self.angle_target - body.angle
-                if abs(delta_rotation) < 0.0000005:
+                if abs(delta_rotation) < BEETLE_ROTATION_EPSILON:
                     self.angle_target = None
+                    body.angular_velocity = 0.0
+                    self.facing_cooldown = 1.0
                 elif delta_rotation >= 0.0:
-                    body.angle += min(delta_rotation, BEETLE_ROTATION_SPEED)
+                    body.angular_velocity = BEETLE_ROTATION_SPEED
                 else:
-                    body.angle += max(delta_rotation, -BEETLE_ROTATION_SPEED)
+                    body.angular_velocity = -BEETLE_ROTATION_SPEED
                 pass
 
     def damage(self, damage):
