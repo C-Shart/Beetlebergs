@@ -64,10 +64,12 @@ class Beetle(arcade.Sprite):
             angle += math.pi * 2.0
         return angle
 
-    def set_facing(self, target_x = 640, target_y = 360, enemy_x = None, enemy_y = None):
-        focus_x = target_x if enemy_x is None else enemy_x
-        focus_y = target_y if enemy_y is None else enemy_y
-        self.angle_target = self.get_angle_to_location(focus_x, focus_y)
+    def decide_facing(self):
+        # TODO: Write facing logic.
+        pass
+
+    def set_facing(self, target_x, target_y):
+        self.angle_target = self.get_angle_to_location(target_x, target_y)
 
     def move_to(self, target_x, target_y):
         self.move_target = (target_x, target_y)
@@ -84,6 +86,9 @@ class Beetle(arcade.Sprite):
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
+        if self.active:
+            self.decide_facing()
+
         for ability in self.abilities:
             ability.on_update(delta_time)
         if self.hit_points <= 0:
