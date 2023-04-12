@@ -53,9 +53,11 @@ class BeetleTestes(arcade.Window):
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
+        self.green_auto_button.text = "Make Green Autonomous"
 
         self.red_team = Team(TeamColor.RED, 960, 260)
         self.red_team.set_up_team()
+        self.red_auto_button.text = "Make Red Autonomous"
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
@@ -96,8 +98,9 @@ class BeetleTestes(arcade.Window):
         angle = (math.degrees(math.atan2(y_distance, x_distance)))
         if self.mode == __class__.TesterMode.SHOOTING:
             peashooter_ability = beetle.abilities[0]
-            peashooter_ability.enabled = not peashooter_ability.enabled
-            beetle.firing_target = (x, y) if peashooter_ability.enabled else None
+            peashooter_ability.active = not peashooter_ability.active
+            beetle.firing_target = (x, y) if peashooter_ability.active else None
+            # TODO: Turning on the peashooter like this doesn't stick because the beetle is never made active. Fix this.
 
         elif self.mode == __class__.TesterMode.MOVING:
             if modifiers & arcade.key.MOD_SHIFT:
@@ -140,7 +143,6 @@ class BeetleTestes(arcade.Window):
         self.green_team.on_draw()
         self.red_team.on_draw()
         self.manager.draw()
-
 
     def on_update(self, delta_time):
         self.green_team.on_update(delta_time)
