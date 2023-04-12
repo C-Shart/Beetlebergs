@@ -55,26 +55,22 @@ class Beetle(arcade.Sprite):
         else:
             return None
 
-    def beetle_finder(self):
-        # TODO: Function that locates the nearest beetle within radius X.
-        pass
+    def get_angle_to_location(self, target_x, target_y):
+        delta_x = target_x - self.center_x
+        delta_y = target_y - self.center_y
+        angle = math.atan2(delta_y, delta_x) - math.pi / 2.0
+        if angle < -math.pi:
+            angle += math.pi * 2.0
+        return angle
 
-    def facing(self, target_x: None, target_y: None, enemy_x: None, enemy_y: None):
-        self.click_target = (target_x, target_y)
-        self.beetle_target = (enemy_x, enemy_y)
+    def set_facing(self, target_x = 640, target_y = 360, enemy_x = None, enemy_y = None):
         focus_x = target_x if enemy_x is None else enemy_x
         focus_y = target_y if enemy_y is None else enemy_y
-        self.angle_target = math.atan2(focus_y, focus_x) - math.pi / 2.0
-        if self.angle_target < -math.pi:
-            self.angle_target += math.pi * 2.0
+        self.angle_target = self.get_angle_to_location(focus_x, focus_y)
 
     def move_to(self, target_x, target_y):
         self.move_target = (target_x, target_y)
-        """delta_x = target_x - self.center_x
-        delta_y = target_y - self.center_y
-        self.angle_target = math.atan2(delta_y, delta_x) - math.pi / 2.0
-        if self.angle_target < -math.pi:
-            self.angle_target += math.pi * 2.0 """
+        # TODO: Do we need this anymore if we're just setting move_target?
 
     def draw(self):
         # TODO: handle drawing the beetle
@@ -84,7 +80,6 @@ class Beetle(arcade.Sprite):
         # FOR TESTING PURPOSES
         arcade.draw_circle_outline(self.center_x, self.center_y, DEFAULT_VISION, arcade.color.ELECTRIC_PURPLE, 2)
 
-
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
@@ -93,6 +88,7 @@ class Beetle(arcade.Sprite):
         if self.hit_points <= 0:
             self.remove_from_sprite_lists()
         else:
+            self.set_facing()
             if self.move_target:
                 target_x, target_y = self.move_target
                 delta_x = target_x - self.center_x
