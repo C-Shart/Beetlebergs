@@ -1,38 +1,51 @@
 import arcade
 from attacks import Peashooter
 from beetles import Beetle, DEFAULT_HIT_POINTS
+from team_color import TeamColor
 
 class Team:
     def __init__(self, color, center_x, center_y):
         self.color = color
         self.center_x = center_x
         self.center_y = center_y
-        self.beetles = [Beetle(self.color, self.center_x, self.center_y)]
-        self.sprite_list = arcade.SpriteList();
+        self.beetles = [Beetle(self, self.center_x, self.center_y)]
+        self.sprite_list = arcade.SpriteList()
+        self.projectiles_list = arcade.SpriteList()
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
+
+    def set_up_team(self):
+        self.sprite_list.clear()
+        self.projectiles_list.clear()
 
         for beetle in self.beetles:
             self.sprite_list.append(beetle)
 
-    def set_up_team(self):
-        # TODO: Responsible for preparing the beetles for battle, refreshing their health, resetting their psositions.
-        beetle_abilities = []
+        beetle_ability_traits = []
         for trait in self.traits:
             if trait.ability is None:
-                beetle_abilities.append(trait.ability())
-            else:
                 trait.set_up_trait(self)
+            else:
+                beetle_ability_traits.append(trait)
 
         for beetle in self.beetles:
             beetle.hit_points = DEFAULT_HIT_POINTS
-            beetle.abilities = beetle_abilities
-            # TODO: Reset position
+            beetle.abilities = []
+
+            # TODO: Handle placing more than one beetle
+            # TODO: Randomize positions? (i.e. randomized positions within a group on each side)
+            beetle.center_x = self.center_x
+            beetle.center_y = self.center_y
+
+            beetle.angle = -90.0 if self.color == TeamColor.GREEN else 90.0
+            for trait in beetle_ability_traits:
+                beetle.abilities.append(trait.ability(beetle))
+
 
     def on_draw(self):
         # TODO: Draws the team
         self.sprite_list.draw()
+        self.projectiles_list.draw()
 
     def on_update(self, delta_time):
-        # TODO: Updates the team
-        for beetle in self.beetles:
-            beetle.on_update(delta_time)
+        self.sprite_list.on_update(delta_time)
+        self.projectiles_list.on_update(delta_time)
