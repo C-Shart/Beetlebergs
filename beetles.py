@@ -45,6 +45,7 @@ class Beetle(arcade.Sprite):
         self.y_velocity = 0
         self.move_target = None
         self.angle_target = None
+        self.facing_cooldown = 0.0
         self.firing_target = None
         self.known_enemies = None
         self.active = False
@@ -64,9 +65,12 @@ class Beetle(arcade.Sprite):
             angle += math.pi * 2.0
         return angle
 
-    def decide_facing(self):
-        if not self.angle_target:
+    def decide_facing(self, delta_time):
+        if not self.angle_target and self.facing_cooldown <= 0.0:
+            self.facing_cooldown = 0.0
             self.angle_target = random.uniform(-math.pi, math.pi)
+        elif self.facing_cooldown > 0.0:
+            self.facing_cooldown -= delta_time
 
     def decide_position(self):
         if not self.move_target:
@@ -91,7 +95,7 @@ class Beetle(arcade.Sprite):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
         if self.active:
-            self.decide_facing()
+            self.decide_facing(delta_time)
             self.decide_position()
 
         for ability in self.abilities:
@@ -117,6 +121,7 @@ class Beetle(arcade.Sprite):
                 delta_rotation = self.angle_target - body.angle
                 if abs(delta_rotation) < 0.0000005:
                     self.angle_target = None
+                    self.facing_cooldown = 1.0
                 elif delta_rotation >= 0.0:
                     body.angle += min(delta_rotation, BEETLE_ROTATION_SPEED)
                 else:
