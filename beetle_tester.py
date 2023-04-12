@@ -34,7 +34,11 @@ class BeetleTestes(arcade.Window):
         self.mode_button = arcade.gui.UIFlatButton(text="Shooting", width=200)
         self.mode_button.on_click = self.on_click_mode
 
+        self.reset_button = arcade.gui.UIFlatButton(text="Reset", width = 200)
+        self.reset_button.on_click = self.on_click_reset
+
         self.settings_box.add(self.mode_button.with_space_around(bottom=20))
+        self.settings_box.add(self.reset_button.with_space_around(bottom=20))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
 
     def setup(self):
@@ -97,6 +101,9 @@ class BeetleTestes(arcade.Window):
         elif self.mode == __class__.TesterMode.MOVING:
             self.mode = __class__.TesterMode.SHOOTING
             self.mode_button.text = "Shooting"
+
+    def on_click_reset(self, _event):
+        self.setup()
 
     def on_draw(self):
         arcade.start_render()

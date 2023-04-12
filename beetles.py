@@ -36,7 +36,6 @@ class Beetle(arcade.Sprite):
         self.awareness = DEFAULT_AWARENESS
         self.vision = DEFAULT_VISION
         self.accuracy = DEFAULT_ACCURACY
-        self.angle = -90.0 if team.color == TeamColor.GREEN else 90.0
         self.force = 0
         self.target_facing = None
         self.target_moving = None

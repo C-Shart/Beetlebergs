@@ -1,6 +1,7 @@
 import arcade
 from attacks import Peashooter
 from beetles import Beetle, DEFAULT_HIT_POINTS
+from team_color import TeamColor
 
 class Team:
     def __init__(self, color, center_x, center_y):
@@ -12,10 +13,13 @@ class Team:
         self.projectiles_list = arcade.SpriteList()
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
 
+    def set_up_team(self):
+        self.sprite_list.clear()
+        self.projectiles_list.clear()
+
         for beetle in self.beetles:
             self.sprite_list.append(beetle)
 
-    def set_up_team(self):
         beetle_ability_traits = []
         for trait in self.traits:
             if trait.ability is None:
@@ -26,10 +30,15 @@ class Team:
         for beetle in self.beetles:
             beetle.hit_points = DEFAULT_HIT_POINTS
             beetle.abilities = []
+
+            # TODO: Handle placing more than one beetle
+            # TODO: Randomize positions? (i.e. randomized positions within a group on each side)
+            beetle.center_x = self.center_x
+            beetle.center_y = self.center_y
+
+            beetle.angle = -90.0 if self.color == TeamColor.GREEN else 90.0
             for trait in beetle_ability_traits:
                 beetle.abilities.append(trait.ability(beetle))
-            # TODO: Reset positions
-            # TODO: Randomize positions? (i.e. randomized positions within a group on each side)
 
 
     def on_draw(self):
