@@ -16,22 +16,26 @@ class BeetleBattle(arcade.View):
 
         self.green_team = None
         self.red_team = None
+        self.predicted_team = None
 
         self.physics_engine = None
 
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-        self.settings_box = arcade.gui.UIBoxLayout()
 
-        self.start_match_button = arcade.gui.UIFlatButton(text="Start Beetle Battle!", width=200)
-        self.start_match_button.on_click = self.on_click_start_match
+        self.ui_box = arcade.gui.UIBoxLayout()
 
-        self.reset_button = arcade.gui.UIFlatButton(text="Reset", width = 200)
-        self.reset_button.on_click = self.on_click_reset
+        self.betting_prompt_label = None
+        self.bet_green_button = None
+        self.bet_red_button = None
 
-        self.settings_box.add(self.start_match_button.with_space_around(bottom=20))
-        self.settings_box.add(self.reset_button.with_space_around(bottom=20))
-        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
+        self.match_over_prompt_label = None
+        self.match_over_confirm_button = None
+
+        arcade.load_font("Assets/Fonts/LuckiestGuy-Regular.ttf")
+        self.buttons_style = {"font_name": "Luckiest Guy"}
+
+        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center", anchor_y="center", child=self.ui_box))
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.WHITE)
@@ -39,13 +43,15 @@ class BeetleBattle(arcade.View):
         arcade.set_viewport(0, self.window.width, 0, self.window.height)
 
     def setup(self):
-        self.start_match_button.text = "Start Beetle Battle!"
-
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
 
         self.red_team = Team(TeamColor.RED, 960, 260)
         self.red_team.set_up_team()
+
+        # DEBUG: Lowering the beetle's HP so this doesn't take forever
+        self.green_team.beetles[0].hit_points = 13
+        self.red_team.beetles[0].hit_points = 13
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
@@ -79,16 +85,36 @@ class BeetleBattle(arcade.View):
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
 
-    def on_click_start_match(self, event):
-        self.green_team.active = not self.green_team.active
-        self.red_team.active = not self.red_team.active
-        if self.green_team.active:
-            self.start_match_button.text = "Stop the Beetle Battle!"
-        else:
-            self.start_match_button.text = "Start Beetle Battle!"
+        self.ui_box.clear()
 
-    def on_click_reset(self, _event):
-        self.setup()
+        self.betting_prompt_label = arcade.gui.UILabel(
+            text="Which Team will REIGN SUPREME? Make your bet!",
+            font_name="Luckiest Guy",
+            font_size=36,
+            text_color=arcade.color.BURNT_ORANGE)
+        self.betting_prompt_label.fit_content()
+        self.ui_box.add(self.betting_prompt_label.with_space_around(bottom=20))
+
+        betting_buttons_style = {"font_name": "Luckiest Guy"}
+        self.bet_green_button = arcade.gui.UIFlatButton(text="Bet on Green", width=200, style=betting_buttons_style)
+        self.bet_red_button = arcade.gui.UIFlatButton(text="Bet on Red", width=200, style=betting_buttons_style)
+        self.bet_green_button.on_click = self.on_click_bet_green
+        self.bet_red_button.on_click = self.on_click_bet_red
+        self.ui_box.add(self.bet_green_button.with_space_around(bottom=20))
+        self.ui_box.add(self.bet_red_button.with_space_around(bottom=20))
+
+    def on_click_bet_green(self, event):
+        self.on_click_bet(event, TeamColor.GREEN)
+
+    def on_click_bet_red(self, event):
+        self.on_click_bet(event, TeamColor.RED)
+
+    def on_click_bet(self, event, team_color):
+        self.predicted_team = team_color
+        # TODO: Have a count-down
+        self.ui_box.clear()
+        self.green_team.active = True
+        self.red_team.active = True
 
     def on_draw(self):
         arcade.start_render()
@@ -102,6 +128,53 @@ class BeetleBattle(arcade.View):
         self.red_team.on_update(delta_time)
         self.physics_engine.step()
         self.physics_engine.resync_sprites()
+
+        if self.predicted_team:
+            green_team_is_alive = True
+            for beetle in self.green_team.beetles:
+                if beetle.hit_points <= 0:
+                    green_team_is_alive = False
+            red_team_is_alive = True
+            for beetle in self.red_team.beetles:
+                if beetle.hit_points <= 0:
+                    red_team_is_alive = False
+
+            if green_team_is_alive and not red_team_is_alive:
+                self.pick_winner(TeamColor.GREEN)
+            elif not green_team_is_alive and red_team_is_alive:
+                self.pick_winner(TeamColor.RED)
+            elif not green_team_is_alive and not red_team_is_alive:
+                self.pick_winner(TeamColor.NEUTRAL)
+
+    def pick_winner(self, winning_color):
+        self.green_team.active = False
+        self.red_team.active = False
+
+        prompt_text = "BATTLE OVER! "
+        if winning_color == TeamColor.GREEN:
+            prompt_text += "Green gets the glory!"
+        elif winning_color == TeamColor.RED:
+            prompt_text += "Red relishes a rout!"
+        elif winning_color == TeamColor.NEUTRAL:
+            prompt_text += "It's a tie! Nobody wins..."
+
+        self.match_over_prompt_label = arcade.gui.UILabel(
+            text=prompt_text,
+            font_name="Luckiest Guy",
+            font_size=36,
+            text_color=arcade.color.BURNT_ORANGE)
+        self.match_over_prompt_label.fit_content()
+        self.ui_box.add(self.match_over_prompt_label.with_space_around(bottom=20))
+
+        # TODO: Judge player's bet
+        self.predicted_team = None
+
+        self.match_over_confirm_button = arcade.gui.UIFlatButton(text="That's that.", width=200, style=self.buttons_style)
+        self.match_over_confirm_button.on_click = self.on_click_confirm_match_over
+        self.ui_box.add(self.match_over_confirm_button.with_space_around(bottom=20))
+
+    def on_click_confirm_match_over(self, event):
+        self.setup()
 
 if __name__ == "__main__":
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
