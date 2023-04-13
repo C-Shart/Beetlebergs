@@ -1,5 +1,6 @@
 import arcade
 import arcade.gui
+from beetles import Beetle
 from teams import Team
 from team_color import TeamColor
 
@@ -50,15 +51,22 @@ class BeetleBattle(arcade.View):
         self.ui_box.clear()
 
     def setup(self):
-        self.green_team = Team(TeamColor.GREEN, 320, 260)
+        BEETLES_PER_TEAM = 10
+        self.green_team = Team(TeamColor.GREEN, 605, 275)
+        for _ in range(BEETLES_PER_TEAM - 1):
+            self.green_team.beetles.append(Beetle(self.green_team))
         self.green_team.set_up_team()
 
-        self.red_team = Team(TeamColor.RED, 960, 260)
+        self.red_team = Team(TeamColor.RED, 705, 275)
+        for _ in range(BEETLES_PER_TEAM - 1):
+            self.red_team.beetles.append(Beetle(self.red_team))
         self.red_team.set_up_team()
 
         # DEBUG: Lowering the beetle's HP so this doesn't take forever
-        self.green_team.beetles[0].hit_points = 13
-        self.red_team.beetles[0].hit_points = 13
+        for beetle in self.green_team.beetles:
+            beetle.hit_points = 13
+        for beetle in self.red_team.beetles:
+            beetle.hit_points = 13
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
@@ -137,14 +145,16 @@ class BeetleBattle(arcade.View):
         self.physics_engine.resync_sprites()
 
         if self.predicted_team:
-            green_team_is_alive = True
+            green_team_is_alive = False
             for beetle in self.green_team.beetles:
-                if beetle.hit_points <= 0:
-                    green_team_is_alive = False
-            red_team_is_alive = True
+                if beetle.hit_points > 0:
+                    green_team_is_alive = True
+                    break
+            red_team_is_alive = False
             for beetle in self.red_team.beetles:
-                if beetle.hit_points <= 0:
-                    red_team_is_alive = False
+                if beetle.hit_points > 0:
+                    red_team_is_alive = True
+                    break
 
             if green_team_is_alive and not red_team_is_alive:
                 self.pick_winner(TeamColor.GREEN)

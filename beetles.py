@@ -19,7 +19,7 @@ DEFAULT_VISION = 250
 DEFAULT_ACCURACY = 25
 
 class Beetle(arcade.Sprite):
-    def __init__(self, team, center_x, center_y):
+    def __init__(self, team, center_x=0, center_y=0):
         path = BEETLE_SPRITE_PATH_GREEN if team.color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
         super().__init__(path, BEETLE_SCALING)
         self.team = team
@@ -98,8 +98,6 @@ class Beetle(arcade.Sprite):
         super().draw()
         for ability in self.abilities:
             ability.draw()
-        # FOR TESTING PURPOSES
-        arcade.draw_circle_outline(self.center_x, self.center_y, DEFAULT_VISION, arcade.color.ELECTRIC_PURPLE, 2)
 
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
@@ -141,7 +139,7 @@ class Beetle(arcade.Sprite):
                 if abs(delta_rotation) < BEETLE_ROTATION_EPSILON:
                     self.angle_target = None
                     body.angular_velocity = 0.0
-                    self.facing_cooldown = 1.0
+                    self.facing_cooldown = 0.5
                 elif delta_rotation >= 0.0:
                     body.angular_velocity = BEETLE_ROTATION_SPEED
                 else:
