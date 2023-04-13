@@ -62,6 +62,9 @@ class BeetleBattle(arcade.View):
             self.red_team.beetles.append(Beetle(self.red_team))
         self.red_team.set_up_team()
 
+        self.green_team.other_team = self.red_team
+        self.red_team.other_team = self.green_team
+
         # DEBUG: Lowering the beetle's HP so this doesn't take forever
         for beetle in self.green_team.beetles:
             beetle.hit_points = 13

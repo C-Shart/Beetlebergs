@@ -59,6 +59,9 @@ class BeetleTestes(arcade.Window):
         self.red_team.set_up_team()
         self.red_auto_button.text = "Make Red Autonomous"
 
+        self.green_team.other_team = self.red_team
+        self.red_team.other_team = self.green_team
+
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
         self.physics_engine.add_sprite_list(self.green_team.beetles,
