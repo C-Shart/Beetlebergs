@@ -44,7 +44,7 @@ class RangedAttack(Attack):
         # TODO: To perform the atack with given beetle during each frame, if needed
 
 class Peashooter(RangedAttack):
-    PEASHOOTER_COOLDOWN = 0.125
+    PEASHOOTER_COOLDOWN = 0.5
 
     def __init__(self, acting_beetle):
         super().__init__(acting_beetle)

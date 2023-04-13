@@ -49,7 +49,7 @@ class BeetleTestes(arcade.Window):
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
 
     def setup(self):
-        self.background = arcade.load_texture("Assets/Images/octagon.png")
+        self.background = arcade.load_texture("Assets/Images/rose_arena.png")
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
