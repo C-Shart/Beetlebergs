@@ -17,6 +17,7 @@ class BeetleBattle(arcade.View):
         self.green_team = None
         self.red_team = None
         self.predicted_team = None
+        self.player_keeps_playing = True
 
         self.physics_engine = None
 
@@ -26,6 +27,7 @@ class BeetleBattle(arcade.View):
         self.ui_box = arcade.gui.UIBoxLayout()
 
         self.betting_prompt_label = None
+        self.result_judgement_label = None
         self.bet_green_button = None
         self.bet_red_button = None
 
@@ -41,6 +43,11 @@ class BeetleBattle(arcade.View):
         arcade.set_background_color(arcade.color.WHITE)
         self.background = arcade.load_texture("Assets/Images/octagon.png")
         arcade.set_viewport(0, self.window.width, 0, self.window.height)
+
+    def on_hide_view(self):
+        # Doing this because otherwise it's possible to get into a weird state where the confirm button still accepts
+        # input on the TitleView
+        self.ui_box.clear()
 
     def setup(self):
         self.green_team = Team(TeamColor.GREEN, 320, 260)
@@ -166,15 +173,42 @@ class BeetleBattle(arcade.View):
         self.match_over_prompt_label.fit_content()
         self.ui_box.add(self.match_over_prompt_label.with_space_around(bottom=20))
 
-        # TODO: Judge player's bet
-        self.predicted_team = None
+        predicted_team = self.predicted_team
+        self.predicted_team = None # to keep the update code above from running
 
-        self.match_over_confirm_button = arcade.gui.UIFlatButton(text="That's that.", width=200, style=self.buttons_style)
+        judgement_text = ""
+        if predicted_team == winning_color:
+            judgement_text = "Good betting! But can you keep it up?"
+            self.player_keeps_playing = True
+        elif winning_color == TeamColor.NEUTRAL:
+            judgement_text = "Draw means House wins! Sorry, friend. Better luck next time!"
+            self.player_keeps_playing = False
+        else:
+            judgement_text = "Too bad! Better luck betting next time!"
+            self.player_keeps_playing = False
+
+        self.result_judgement_label = arcade.gui.UILabel(
+            text=judgement_text,
+            font_name="Luckiest Guy",
+            font_size=18,
+            text_color=arcade.color.SLATE_BLUE)
+        self.result_judgement_label.fit_content()
+        self.ui_box.add(self.result_judgement_label.with_space_around(bottom=20))
+
+        confirm_text = "Right on!" if self.player_keeps_playing else "That's that."
+        self.match_over_confirm_button = arcade.gui.UIFlatButton(text=confirm_text, width=200, style=self.buttons_style)
         self.match_over_confirm_button.on_click = self.on_click_confirm_match_over
         self.ui_box.add(self.match_over_confirm_button.with_space_around(bottom=20))
 
     def on_click_confirm_match_over(self, event):
-        self.setup()
+        if self.player_keeps_playing:
+            self.setup()
+        else:
+            # import down here to avoid circular import
+            from title_view import TitleView
+
+            title_view = TitleView()
+            self.window.show_view(title_view)
 
 if __name__ == "__main__":
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
