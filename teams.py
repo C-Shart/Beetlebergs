@@ -3,6 +3,13 @@ from attacks import Peashooter
 from beetles import Beetle, DEFAULT_HIT_POINTS
 from team_color import TeamColor
 
+TEAM_CELL_SIZE = 100
+TEAM_CELL_OFFSETS = [
+    (0, 0), (0, TEAM_CELL_SIZE), (0, -TEAM_CELL_SIZE), (0, 2 * TEAM_CELL_SIZE), (0, -2 * TEAM_CELL_SIZE),
+    (2 * TEAM_CELL_SIZE, 0), (2 * TEAM_CELL_SIZE, TEAM_CELL_SIZE), (2 * TEAM_CELL_SIZE, -TEAM_CELL_SIZE),
+    (2 * TEAM_CELL_SIZE, 2 * TEAM_CELL_SIZE), (2 * TEAM_CELL_SIZE, -2 * TEAM_CELL_SIZE)
+    ]
+
 class Team:
     def __init__(self, color, center_x, center_y):
         self.color = color
@@ -44,14 +51,17 @@ class Team:
             else:
                 beetle_ability_traits.append(trait)
 
+        current_offset = 0
         for beetle in self.beetles:
             beetle.hit_points = DEFAULT_HIT_POINTS
             beetle.abilities = []
 
-            # TODO: Handle placing more than one beetle
             # TODO: Randomize positions? (i.e. randomized positions within a group on each side)
-            beetle.center_x = self.center_x
-            beetle.center_y = self.center_y
+            offset_x, offset_y = TEAM_CELL_OFFSETS[current_offset] # TODO: Will run out after 10 beetles!
+            offset_x = offset_x if self.color == TeamColor.RED else -offset_x
+            beetle.center_x = self.center_x + offset_x
+            beetle.center_y = self.center_y + offset_y
+            current_offset += 1
 
             beetle.angle = -90.0 if self.color == TeamColor.GREEN else 90.0
             for trait in beetle_ability_traits:
