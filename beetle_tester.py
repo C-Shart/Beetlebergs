@@ -11,6 +11,7 @@ from team_color import TeamColor
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "BIG BAD BEETLE BALLS"
+MUSIC_PATH = "Assets/Sound/Music/banjo_loop.wav"
 
 class BeetleTestes(arcade.Window):
     def __init__(self):
@@ -47,8 +48,11 @@ class BeetleTestes(arcade.Window):
         self.settings_box.add(self.reset_button.with_space_around(bottom=20))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
 
+        self.song = arcade.load_sound(MUSIC_PATH)
+
     def setup(self):
-        self.background = arcade.load_texture("Assets/Images/rose_arena.png")
+        self.background = arcade.load_texture("Assets/Images/octagon.png")
+        self.music_player = arcade.play_sound(self.song, 0.8, 0.0, True, 1.0)
 
         self.green_team = Team(TeamColor.GREEN, 320, 260)
         self.green_team.set_up_team()
