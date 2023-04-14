@@ -1,6 +1,7 @@
 import arcade
 import math
 import random
+from statemachine import StateMachine, State
 from team_color import TeamColor
 
 BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
@@ -21,7 +22,7 @@ DEFAULT_VISION = 250
 DEFAULT_ACCURACY = 25
 
 class Beetle(arcade.Sprite):
-    def __init__(self, team, center_x, center_y):
+    def __init__(self, team, center_x=0, center_y=0):
         path = BEETLE_SPRITE_PATH_GREEN if team.color == TeamColor.GREEN else BEETLE_SPRITE_PATH_RED
         super().__init__(path, BEETLE_SCALING)
         self.team = team
@@ -41,6 +42,7 @@ class Beetle(arcade.Sprite):
         self.accuracy = DEFAULT_ACCURACY
         self.angle = -90.0 if team.color == TeamColor.GREEN else 90.0
         self.force = 0
+        self.logic_state_machine = __class__.logic()
         self.target_facing = None
         self.target_moving = None
         self.is_moving = None
@@ -49,9 +51,11 @@ class Beetle(arcade.Sprite):
         self.move_target = None
         self.angle_target = None
         self.facing_cooldown = 0.0
+        self.targeted_beetle = None
         self.firing_target = None
         self.known_enemies = None
         self.active = False
+        self.spatial_manager = None
         self.sfx_beetle_dead = arcade.load_sound(SFXPATH_BEETLE_DEAD)
 
         # Commenting out because we will need hit/damage SFX but dunno where that goes yet
@@ -104,14 +108,26 @@ class Beetle(arcade.Sprite):
         super().draw()
         for ability in self.abilities:
             ability.draw()
-        # FOR TESTING PURPOSES
-        arcade.draw_circle_outline(self.center_x, self.center_y, DEFAULT_VISION, arcade.color.ELECTRIC_PURPLE, 2)
 
     def on_update(self, delta_time):
         # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
 
         if self.active:
+            current_state = self.logic_state_machine.current_state
+            if current_state == __class__.logic.start_idle:
+                self.logic_state_machine.start_battle()
+            elif current_state == __class__.logic.find_target:
+                self.targeted_beetle = random.choice(self.team.other_team.beetles)
+                self.logic_state_machine.target_acquired()
+            elif current_state == __class__.logic.kill_target:
+                if self.targeted_beetle.hit_points > 0:
+                    self.set_facing(self.targeted_beetle.center_x, self.targeted_beetle.center_y)
+                else:
+                    self.targeted_beetle = None
+                    self.logic_state_machine.target_eliminated()
+            elif current_state == __class__.logic.dead:
+                return
             self.decide_facing(delta_time)
             self.decide_position()
 
@@ -122,6 +138,9 @@ class Beetle(arcade.Sprite):
         if self.hit_points <= 0:
             arcade.play_sound(self.sfx_beetle_dead)
             self.remove_from_sprite_lists()
+            self.spatial_manager.remove(self)
+            if self.logic_state_machine.current_state != __class__.logic.dead:
+                self.logic_state_machine.beetle_dead()
         else:
             if self.move_target:
                 target_x, target_y = self.move_target
@@ -148,7 +167,7 @@ class Beetle(arcade.Sprite):
                 if abs(delta_rotation) < BEETLE_ROTATION_EPSILON:
                     self.angle_target = None
                     body.angular_velocity = 0.0
-                    self.facing_cooldown = 1.0
+                    self.facing_cooldown = 0.5
                 elif delta_rotation >= 0.0:
                     body.angular_velocity = BEETLE_ROTATION_SPEED
                 else:
@@ -157,3 +176,26 @@ class Beetle(arcade.Sprite):
 
     def damage(self, damage):
         self.hit_points -= damage
+
+    class logic(StateMachine):
+        start_idle = State(initial=True)
+        find_target = State()
+        kill_target = State()
+        dead = State(final=True)
+
+        start_battle = start_idle.to(find_target)
+        target_acquired = find_target.to(kill_target)
+        target_eliminated = kill_target.to(find_target)
+        beetle_dead = start_idle.to(dead) | find_target.to(dead) | kill_target.to(dead)
+
+        def on_start_battle(self):
+            print("Starting Battle! Looking for Target...")
+
+        def on_target_acquired(self):
+            print("Acquired target! Eliminating Target...")
+
+        def on_target_eliminated(self):
+            print("Target Eliminated! Looking for Target...")
+
+        def on_beetle_dead(self):
+            print("RIP.")

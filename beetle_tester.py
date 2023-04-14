@@ -3,6 +3,7 @@ import arcade.gui
 import attacks
 from enum import Enum
 import math
+from spatial_manager import SpatialManager
 from teams import Team
 from team_color import TeamColor
 
@@ -17,9 +18,7 @@ class BeetleTestes(arcade.Window):
 
         # Call the parent class constructor
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-
         arcade.set_background_color(arcade.color.WHITE)
-
         self.background = None
 
         self.green_team = None
@@ -63,6 +62,9 @@ class BeetleTestes(arcade.Window):
         self.red_team.set_up_team()
         self.red_auto_button.text = "Make Red Autonomous"
 
+        self.green_team.other_team = self.red_team
+        self.red_team.other_team = self.green_team
+
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
         self.physics_engine.add_sprite_list(self.green_team.beetles,
@@ -87,6 +89,7 @@ class BeetleTestes(arcade.Window):
                 if pea.team_color == beetle.team.color:
                     return False
                 pea.remove_from_sprite_lists()
+                pea.spatial_manager.remove(pea)
                 beetle.damage(pea.power)
                 print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
                 return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
@@ -94,6 +97,10 @@ class BeetleTestes(arcade.Window):
                 return False
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
+
+        self.spatial_manager = SpatialManager()
+        self.spatial_manager.add_sprite_list(self.green_team.beetles)
+        self.spatial_manager.add_sprite_list(self.red_team.beetles)
 
     def on_mouse_press(self, x, y, button, modifiers):
         beetle = self.green_team.beetles[0] if button == arcade.MOUSE_BUTTON_LEFT else self.red_team.beetles[0]
@@ -149,6 +156,7 @@ class BeetleTestes(arcade.Window):
         self.manager.draw()
 
     def on_update(self, delta_time):
+        self.spatial_manager.on_update(delta_time)
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
         self.physics_engine.step()
