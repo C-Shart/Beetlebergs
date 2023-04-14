@@ -1,5 +1,7 @@
 import arcade
 import arcade.gui
+from beetles import Beetle
+from spatial_manager import SpatialManager
 from teams import Team
 from team_color import TeamColor
 
@@ -50,15 +52,25 @@ class BeetleBattle(arcade.View):
         self.ui_box.clear()
 
     def setup(self):
-        self.green_team = Team(TeamColor.GREEN, 320, 260)
+        BEETLES_PER_TEAM = 10
+        self.green_team = Team(TeamColor.GREEN, 605, 275)
+        for _ in range(BEETLES_PER_TEAM - 1):
+            self.green_team.beetles.append(Beetle(self.green_team))
         self.green_team.set_up_team()
 
-        self.red_team = Team(TeamColor.RED, 960, 260)
+        self.red_team = Team(TeamColor.RED, 705, 275)
+        for _ in range(BEETLES_PER_TEAM - 1):
+            self.red_team.beetles.append(Beetle(self.red_team))
         self.red_team.set_up_team()
 
+        self.green_team.other_team = self.red_team
+        self.red_team.other_team = self.green_team
+
         # DEBUG: Lowering the beetle's HP so this doesn't take forever
-        self.green_team.beetles[0].hit_points = 13
-        self.red_team.beetles[0].hit_points = 13
+        for beetle in self.green_team.beetles:
+            beetle.hit_points = 13
+        for beetle in self.red_team.beetles:
+            beetle.hit_points = 13
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 
@@ -84,6 +96,7 @@ class BeetleBattle(arcade.View):
                 if pea.team_color == beetle.team.color:
                     return False
                 pea.remove_from_sprite_lists()
+                pea.spatial_manager.remove(pea)
                 beetle.damage(pea.power)
                 print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
                 return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
@@ -91,6 +104,10 @@ class BeetleBattle(arcade.View):
                 return False
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
+
+        self.spatial_manager = SpatialManager()
+        self.spatial_manager.add_sprite_list(self.green_team.beetles)
+        self.spatial_manager.add_sprite_list(self.red_team.beetles)
 
         self.ui_box.clear()
 
@@ -131,20 +148,23 @@ class BeetleBattle(arcade.View):
         self.manager.draw()
 
     def on_update(self, delta_time):
+        self.spatial_manager.on_update(delta_time)
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
         self.physics_engine.step()
         self.physics_engine.resync_sprites()
 
         if self.predicted_team:
-            green_team_is_alive = True
+            green_team_is_alive = False
             for beetle in self.green_team.beetles:
-                if beetle.hit_points <= 0:
-                    green_team_is_alive = False
-            red_team_is_alive = True
+                if beetle.hit_points > 0:
+                    green_team_is_alive = True
+                    break
+            red_team_is_alive = False
             for beetle in self.red_team.beetles:
-                if beetle.hit_points <= 0:
-                    red_team_is_alive = False
+                if beetle.hit_points > 0:
+                    red_team_is_alive = True
+                    break
 
             if green_team_is_alive and not red_team_is_alive:
                 self.pick_winner(TeamColor.GREEN)

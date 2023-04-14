@@ -47,7 +47,7 @@ class RangedAttack(Attack):
         # TODO: To perform the atack with given beetle during each frame, if needed
 
 class Peashooter(RangedAttack):
-    PEASHOOTER_COOLDOWN = 0.125
+    PEASHOOTER_COOLDOWN = 0.5
 
     def __init__(self, acting_beetle):
         super().__init__(acting_beetle)
@@ -70,6 +70,7 @@ class Peashooter(RangedAttack):
             projectile = __class__.projectile(beetle.center_x, beetle.center_y, angle, beetle)
             beetle.team.projectiles_list.append(projectile)
             beetle.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
+            beetle.spatial_manager.add_sprite(projectile)
             self.cooldown = __class__.PEASHOOTER_COOLDOWN
 
     class trait(Trait):

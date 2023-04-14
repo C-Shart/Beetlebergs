@@ -62,4 +62,14 @@ Diagram
 
 ```mermaid
 stateDiagram-v2
-    State: This area is UNDER CONSTRUCTION
+StartIdle : Waiting For Battle Start
+FindTarget : Looking for Target
+KillTarget : Try to kill Target
+Dead : Dead
+    [*] --> StartIdle
+    StartIdle --> FindTarget
+    FindTarget --> KillTarget : Target found
+    KillTarget --> FindTarget : Target dead
+    FindTarget --> Dead : Beetle dies
+    KillTarget --> Dead : Beetle dies
+    Dead --> [*]
