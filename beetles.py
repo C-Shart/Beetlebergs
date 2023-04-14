@@ -6,9 +6,6 @@ from team_color import TeamColor
 
 BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
 BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
-SFXPATH_BEETLE_HIT = "Assets/Sound/SFX/impact2_noisecollector.wav"
-SFXPATH_BEETLE_DEAD = "Assets/Sound/SFX/beetle_dead_mixkit.wav"
-
 BEETLE_SCALING = 1
 BEETLE_MOVE_FORCE = 500
 BEETLE_ROTATION_SPEED = math.pi
@@ -56,10 +53,6 @@ class Beetle(arcade.Sprite):
         self.known_enemies = None
         self.active = False
         self.spatial_manager = None
-        self.sfx_beetle_dead = arcade.load_sound(SFXPATH_BEETLE_DEAD)
-
-        # Commenting out because we will need hit/damage SFX but dunno where that goes yet
-        # self.sfx_beetle_hit = arcade.load_sound(BEETLE_SFXPATH_BEETLE_HIT)
 
     @property
     def physics_engine(self):

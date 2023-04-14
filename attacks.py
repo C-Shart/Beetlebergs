@@ -1,5 +1,4 @@
 import math
-from arcade import play_sound, load_sound
 from abilities import Ability
 from hazards import Projectile
 from traits import Trait
@@ -10,8 +9,6 @@ DEFAULT_FIRE_RATE = 20.0
 DEFAULT_RANGE = 500.0
 PROJECTILE_MOVE_FORCE = 2500
 PROJECTILE_SCALING = 1
-
-SFX_PATH_PEASHOOTER = "Assets\Sound\SFX\pew_xtrgamr.wav"
 
 class Attack(Ability):
     def __init__(self, acting_beetle):
@@ -97,8 +94,6 @@ class Peashooter(RangedAttack):
 
             # Fixes the angle of the sprite itself, avoiding changing the velocity vector
             self.angle -= 90.0
-            self.peashooter_pew = load_sound(SFX_PATH_PEASHOOTER)
-            play_sound(self.peashooter_pew)
 
         def draw(self):
             super().draw()
