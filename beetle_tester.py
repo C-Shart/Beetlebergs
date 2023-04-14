@@ -1,6 +1,5 @@
 import arcade
 import arcade.gui
-import pymunk
 import attacks
 import spatial_manager
 from enum import Enum
@@ -18,15 +17,7 @@ class BeetleTestes(arcade.Window):
 
         # Call the parent class constructor
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-        NODE_CAPACITY = 2
-        screen = SCREEN_WIDTH, SCREEN_HEIGHT
-        colliders = []
-        boundary = spatial_manager.SpatialManager.Rectangle(pymunk.Vec2d(0,0), pymunk.Vec2d(SCREEN_WIDTH, SCREEN_HEIGHT))
-        quadtree = spatial_manager.SpatialManager(NODE_CAPACITY, boundary)
-        # TODO: insert way of appending colliders to colliders[]
-
         arcade.set_background_color(arcade.color.WHITE)
-
         self.background = None
 
         self.green_team = None

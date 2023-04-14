@@ -1,16 +1,25 @@
-from pymunk.vec2d import Vec2d
 from arcade import gl
+from pymunk.vec2d import Vec2d
+from math import sqrt
+
+# CONSTANTS
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+NODE_CAPACITY = 2
 
 class SpatialManager:
     def __init__(self, capacity, boundary):
         self.capacity = capacity
         self.boundary = boundary
-        self.colliders = []
+        self.sprites = []
+        # TODO: insert way of appending sprites to self.sprites[]
 
         self.northwest = None
         self.northeast = None
         self.southwest = None
         self.southeast = None
+
+        quadtree = SpatialManager(NODE_CAPACITY, boundary)
 
     def subdivide(self):
         parent = self.boundary
@@ -44,56 +53,56 @@ class SpatialManager:
         self.southwest = SpatialManager(self.capacity, boundary_sw)
         self.southeast = SpatialManager(self.capacity, boundary_se)
 
-        for i in range(len(self.colliders)):
-            self.northwest.insert(self.colliders[i])
-            self.northeast.insert(self.colliders[i])
-            self.southwest.insert(self.colliders[i])
-            self.southeast.insert(self.colliders[i])
+        for i in range(len(self.sprites)):
+            self.northwest.insert(self.sprites[i])
+            self.northeast.insert(self.sprites[i])
+            self.southwest.insert(self.sprites[i])
+            self.southeast.insert(self.sprites[i])
 
-    def insert(self, collider):
-        if self.boundary.contains_collider(collider) == False:
+    def insert(self, sprite):
+        if self.boundary.contains_sprite(sprite) == False:
             return False
 
-        if len(self.colliders) < self.capacity and self.northwest == None:
-            self.colliders.append(collider)
+        if len(self.sprites) < self.capacity and self.northwest == None:
+            self.sprites.append(sprite)
             return True
         else:
             if self.northwest == None:
                 self.subdivide()
 
-            if self.northwest.insert(collider):
+            if self.northwest.insert(sprite):
                 return True
-            if self.northeast.insert(collider):
+            if self.northeast.insert(sprite):
                 return True
-            if self.southwest.insert(collider):
+            if self.southwest.insert(sprite):
                 return True
-            if self.southeast.insert(collider):
+            if self.southeast.insert(sprite):
                 return True
             return False
 
-    def query_range(self, _range):
-        colliders_in_range = []
+    def query_range(self, range):
+        sprites_in_range = []
 
-        if type(_range) == __class__.Circle:
-            if _range.intersects(self.boundary)==True:
-                return colliders_in_range
-        elif type(_range) == __class__.Rectangle:
-            if _range.intersects(self.boundary)==True:
-                return colliders_in_range
+        if type(range) == __class__.Circle:
+            if range.intersects(self.boundary)==True:
+                return sprites_in_range
+        elif type(range) == __class__.Rectangle:
+            if range.intersects(self.boundary)==True:
+                return sprites_in_range
 
-        if self.boundary.intersects(_range):
-            return particlesInRange
+        if self.boundary.intersects(range):
+            return sprites_in_range
         else:
-            for collider in self.colliders:
-                if _range.contains_collider(collider):
-                    colliders_in_range.append(collider)
+            for sprite in self.sprites:
+                if range.contains_sprite(sprite):
+                    sprites_in_range.append(sprite)
             if self.northwest != None:
-                colliders_in_range += self.northwest.query_range(_range)
-                colliders_in_range += self.northeast.query_range(_range)
-                colliders_in_range += self.southwest.query_range(_range)
-                colliders_in_range += self.southeast.query_range(_range)
+                sprites_in_range += self.northwest.query_range(range)
+                sprites_in_range += self.northeast.query_range(range)
+                sprites_in_range += self.southwest.query_range(range)
+                sprites_in_range += self.southeast.query_range(range)
 
-# Commenting out Show until we can figure out how to implement
+        # Commenting out Show until we can figure out how to implement
     """ def Show(self, screen):
         self.boundary.Draw(screen)
         if self.north_west != None:
@@ -102,13 +111,14 @@ class SpatialManager:
             self.south_west.Show(screen)
             self.south_east.Show(screen) """
 
-    def on_update(self, delta_time):
-        # TODO: Recalculates buckets, adds sprites and spritelists to track
-        pass
 
-    def get_nearby(self):
-        # TODO: Called after on_update has ran to get objects nearby a certain x, y
-        pass
+    class QuadtreeNode:
+        def __init__(self):
+            boundary = SpatialManager.Rectangle(Vec2d(0,0), Vec2d(SCREEN_WIDTH, SCREEN_HEIGHT))
+
+            # TODO: create nodes
+            pass
+
 
     # Drawing useful ranges
     class Rectangle:
@@ -117,8 +127,8 @@ class SpatialManager:
             self.scale = scale
             self.line_thickness = 0
 
-        def contains_collider(self, collider):
-            x, y = collider.position
+        def contains_sprite(self, sprite):
+            x, y = sprite.position
             bx, by = self.position
             w, h = self.scale
             if x >= bx and x <= bx+w and y >= by and y <= by+h:
@@ -150,9 +160,9 @@ class SpatialManager:
             self.scale = None
             self.line_thickness = 0
 
-        def contains_collider(self, collider):
+        def contains_sprite(self, sprite):
             x1, y1 = self.position
-            x2, y2 = collider.position
+            x2, y2 = sprite.position
             distance = pow(x2-x1, 2) + pow(y2-y1, 2)
             if distance <= self.sqradius:
                 return True
@@ -179,3 +189,11 @@ class SpatialManager:
         # Commenting out Draw methods for now until I can figure out how to get them drawn properly.
         """ def Draw(self):
             gl.geometry.????() """
+
+    def on_update(self, delta_time):
+        # TODO: Recalculates buckets, adds sprites and spritelists to track
+        pass
+
+    def get_nearby(self):
+        # TODO: Called after on_update has ran to get objects nearby a certain x, y
+        pass
