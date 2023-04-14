@@ -7,10 +7,10 @@ class SpatialManager:
         self.boundary = boundary
         self.colliders = []
 
-        self.north_west = None
-        self.north_east = None
-        self.south_west = None
-        self.south_east = None
+        self.northwest = None
+        self.northeast = None
+        self.southwest = None
+        self.southeast = None
 
     def subdivide(self):
         parent = self.boundary
@@ -39,35 +39,35 @@ class SpatialManager:
             parent.scale/2
         )
 
-        self.north_west = Quadtree(self.capacity, boundary_nw)
-        self.north_east = Quadtree(self.capacity, boundary_ne)
-        self.south_west = Quadtree(self.capacity, boundary_sw)
-        self.south_east = Quadtree(self.capacity, boundary_se)
+        self.northwest = SpatialManager(self.capacity, boundary_nw)
+        self.northeast = SpatialManager(self.capacity, boundary_ne)
+        self.southwest = SpatialManager(self.capacity, boundary_sw)
+        self.southeast = SpatialManager(self.capacity, boundary_se)
 
         for i in range(len(self.colliders)):
-            self.north_west.insert(self.colliders[i])
-            self.north_east.insert(self.colliders[i])
-            self.south_west.insert(self.colliders[i])
-            self.south_east.insert(self.colliders[i])
+            self.northwest.insert(self.colliders[i])
+            self.northeast.insert(self.colliders[i])
+            self.southwest.insert(self.colliders[i])
+            self.southeast.insert(self.colliders[i])
 
     def insert(self, collider):
         if self.boundary.contains_collider(collider) == False:
             return False
 
-        if len(self.colliders) < self.capacity and self.north_west == None:
+        if len(self.colliders) < self.capacity and self.northwest == None:
             self.colliders.append(collider)
             return True
         else:
-            if self.north_west == None:
+            if self.northwest == None:
                 self.subdivide()
 
-            if self.north_west.insert(collider):
+            if self.northwest.insert(collider):
                 return True
-            if self.north_east.insert(collider):
+            if self.northeast.insert(collider):
                 return True
-            if self.south_west.insert(collider):
+            if self.southwest.insert(collider):
                 return True
-            if self.south_east.insert(collider):
+            if self.southeast.insert(collider):
                 return True
             return False
 
@@ -87,11 +87,11 @@ class SpatialManager:
             for collider in self.colliders:
                 if _range.contains_collider(collider):
                     colliders_in_range.append(collider)
-            if self.north_west != None:
-                colliders_in_range += self.north_west.query_range(_range)
-                colliders_in_range += self.north_east.query_range(_range)
-                colliders_in_range += self.south_west.query_range(_range)
-                colliders_in_range += self.south_east.query_range(_range)
+            if self.northwest != None:
+                colliders_in_range += self.northwest.query_range(_range)
+                colliders_in_range += self.northeast.query_range(_range)
+                colliders_in_range += self.southwest.query_range(_range)
+                colliders_in_range += self.southeast.query_range(_range)
 
 # Commenting out Show until we can figure out how to implement
     """ def Show(self, screen):
