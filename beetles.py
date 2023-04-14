@@ -5,11 +5,13 @@ from team_color import TeamColor
 
 BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
 BEETLE_SPRITE_PATH_RED = "Assets/Sprites/beetle1_RED.png"
+SFXPATH_BEETLE_HIT = "Assets/Sound/SFX/impact2_noisecollector.wav"
+SFXPATH_BEETLE_DEAD = "Assets/Sound/SFX/beetle_dead_mixkit.wav"
+
 BEETLE_SCALING = 1
 BEETLE_MOVE_FORCE = 500
 BEETLE_ROTATION_SPEED = math.pi
 BEETLE_ROTATION_EPSILON = math.pi / 90.0
-
 DEFAULT_HIT_POINTS = 100
 DEFAULT_MAX_FORWARD = 150.0
 DEFAULT_MAX_SIDEWAYS = 100.0
@@ -50,6 +52,10 @@ class Beetle(arcade.Sprite):
         self.firing_target = None
         self.known_enemies = None
         self.active = False
+        self.sfx_beetle_dead = arcade.load_sound(SFXPATH_BEETLE_DEAD)
+
+        # Commenting out because we will need hit/damage SFX but dunno where that goes yet
+        # self.sfx_beetle_hit = arcade.load_sound(BEETLE_SFXPATH_BEETLE_HIT)
 
     @property
     def physics_engine(self):
@@ -114,6 +120,7 @@ class Beetle(arcade.Sprite):
             ability.active = self.active
 
         if self.hit_points <= 0:
+            arcade.play_sound(self.sfx_beetle_dead)
             self.remove_from_sprite_lists()
         else:
             if self.move_target:
