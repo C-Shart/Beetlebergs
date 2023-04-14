@@ -80,7 +80,7 @@ class Peashooter(RangedAttack):
     class projectile(Projectile):
         SPRITE_PATH_GREEN = "Assets/Sprites/Attributed/bullet_bw_green.png"
         SPRITE_PATH_RED = "Assets/Sprites/Attributed/bullet_bw_red.png"
-        DEFAULT_PEA_VELOCITY_MULTIPLIER = 500.0
+        DEFAULT_PEA_VELOCITY_MULTIPLIER = 1000.0
         PEA_POWER = 1
 
         def __init__(self, center_x, center_y, angle, acting_beetle):
