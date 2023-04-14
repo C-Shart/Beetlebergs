@@ -98,7 +98,8 @@ class Peashooter(RangedAttack):
             # Fixes the angle of the sprite itself, avoiding changing the velocity vector
             self.angle -= 90.0
             self.peashooter_pew = load_sound(SFX_PATH_PEASHOOTER)
-            play_sound(self.peashooter_pew)
+            peashooter_player = play_sound(self.peashooter_pew)
+            self.peashooter_pew.set_volume(0.0, peashooter_player) # TODO: turn volume back on
 
         def draw(self):
             super().draw()
