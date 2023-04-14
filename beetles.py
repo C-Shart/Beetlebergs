@@ -53,6 +53,7 @@ class Beetle(arcade.Sprite):
         self.firing_target = None
         self.known_enemies = None
         self.active = False
+        self.spatial_manager = None
 
     @property
     def physics_engine(self):
@@ -130,6 +131,7 @@ class Beetle(arcade.Sprite):
 
         if self.hit_points <= 0:
             self.remove_from_sprite_lists()
+            self.spatial_manager.remove(self)
             if self.logic_state_machine.current_state != __class__.logic.dead:
                 self.logic_state_machine.beetle_dead()
         else:

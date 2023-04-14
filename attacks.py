@@ -67,6 +67,7 @@ class Peashooter(RangedAttack):
             projectile = __class__.projectile(beetle.center_x, beetle.center_y, angle, beetle)
             beetle.team.projectiles_list.append(projectile)
             beetle.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
+            beetle.spatial_manager.add_sprite(projectile)
             self.cooldown = __class__.PEASHOOTER_COOLDOWN
 
     class trait(Trait):

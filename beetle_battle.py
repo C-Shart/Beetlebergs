@@ -1,6 +1,7 @@
 import arcade
 import arcade.gui
 from beetles import Beetle
+from spatial_manager import SpatialManager
 from teams import Team
 from team_color import TeamColor
 
@@ -95,6 +96,7 @@ class BeetleBattle(arcade.View):
                 if pea.team_color == beetle.team.color:
                     return False
                 pea.remove_from_sprite_lists()
+                pea.spatial_manager.remove(pea)
                 beetle.damage(pea.power)
                 print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
                 return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
@@ -102,6 +104,10 @@ class BeetleBattle(arcade.View):
                 return False
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
+
+        self.spatial_manager = SpatialManager()
+        self.spatial_manager.add_sprite_list(self.green_team.beetles)
+        self.spatial_manager.add_sprite_list(self.red_team.beetles)
 
         self.ui_box.clear()
 
@@ -142,6 +148,7 @@ class BeetleBattle(arcade.View):
         self.manager.draw()
 
     def on_update(self, delta_time):
+        self.spatial_manager.on_update(delta_time)
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
         self.physics_engine.step()

@@ -1,199 +1,152 @@
-from arcade import gl
-from pymunk.vec2d import Vec2d
-from math import sqrt
+import arcade
 
 # CONSTANTS
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-NODE_CAPACITY = 2
+NODE_CAPACITY = 7
+MAX_LEVELS = 7
 
 class SpatialManager:
-    def __init__(self, capacity, boundary):
-        self.capacity = capacity
-        self.boundary = boundary
+    def __init__(self):
         self.sprites = []
-        # TODO: insert way of appending sprites to self.sprites[]
+        self.root = None
+        self.initialize_nodes()
 
-        self.northwest = None
-        self.northeast = None
-        self.southwest = None
-        self.southeast = None
+    def initialize_nodes(self):
+        self.root = __class__.node(1, 0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
 
-        quadtree = SpatialManager(NODE_CAPACITY, boundary)
+    def add_sprite(self, sprite):
+        self.sprites.append(sprite)
+        self.root.insert(sprite)
+        sprite.spatial_manager = self
 
-    def subdivide(self):
-        parent = self.boundary
-        boundary_nw = __class__.Rectangle(Vec2d(
-                parent.position.x,
-                parent.position.y
-            ),
-            parent.scale/2
-        )
-        boundary_ne = __class__.Rectangle(Vec2d(
-                parent.position.x + parent.scale.x/2,
-                parent.position.y
-            ),
-            parent.scale/2
-        )
-        boundary_sw = __class__.Rectangle(Vec2d(
-                parent.position.x,
-                parent.position.y + parent.scale.y/2
-            ),
-            parent.scale/2
-        )
-        boundary_se = __class__.Rectangle(Vec2d(
-                parent.position.x + parent.scale.x/2,
-                parent.position.y + parent.scale.y/2
-            ),
-            parent.scale/2
-        )
+    def add_sprite_list(self, sprite_list):
+        for sprite in sprite_list:
+            self.add_sprite(sprite)
 
-        self.northwest = SpatialManager(self.capacity, boundary_nw)
-        self.northeast = SpatialManager(self.capacity, boundary_ne)
-        self.southwest = SpatialManager(self.capacity, boundary_sw)
-        self.southeast = SpatialManager(self.capacity, boundary_se)
-
-        for i in range(len(self.sprites)):
-            self.northwest.insert(self.sprites[i])
-            self.northeast.insert(self.sprites[i])
-            self.southwest.insert(self.sprites[i])
-            self.southeast.insert(self.sprites[i])
-
-    def insert(self, sprite):
-        if self.boundary.contains_sprite(sprite) == False:
-            return False
-
-        if len(self.sprites) < self.capacity and self.northwest == None:
-            self.sprites.append(sprite)
-            return True
-        else:
-            if self.northwest == None:
-                self.subdivide()
-
-            if self.northwest.insert(sprite):
-                return True
-            if self.northeast.insert(sprite):
-                return True
-            if self.southwest.insert(sprite):
-                return True
-            if self.southeast.insert(sprite):
-                return True
-            return False
-
-    def query_range(self, range):
-        sprites_in_range = []
-
-        if type(range) == __class__.Circle:
-            if range.intersects(self.boundary)==True:
-                return sprites_in_range
-        elif type(range) == __class__.Rectangle:
-            if range.intersects(self.boundary)==True:
-                return sprites_in_range
-
-        if self.boundary.intersects(range):
-            return sprites_in_range
-        else:
-            for sprite in self.sprites:
-                if range.contains_sprite(sprite):
-                    sprites_in_range.append(sprite)
-            if self.northwest != None:
-                sprites_in_range += self.northwest.query_range(range)
-                sprites_in_range += self.northeast.query_range(range)
-                sprites_in_range += self.southwest.query_range(range)
-                sprites_in_range += self.southeast.query_range(range)
-
-        # Commenting out Show until we can figure out how to implement
-    """ def Show(self, screen):
-        self.boundary.Draw(screen)
-        if self.north_west != None:
-            self.north_west.Show(screen)
-            self.north_east.Show(screen)
-            self.south_west.Show(screen)
-            self.south_east.Show(screen) """
-
-
-    class QuadtreeNode:
-        def __init__(self):
-            boundary = SpatialManager.Rectangle(Vec2d(0,0), Vec2d(SCREEN_WIDTH, SCREEN_HEIGHT))
-
-            # TODO: create nodes
-            pass
-
-
-    # Drawing useful ranges
-    class Rectangle:
-        def __init__(self, position, scale):
-            self.position = position
-            self.scale = scale
-            self.line_thickness = 0
-
-        def contains_sprite(self, sprite):
-            x, y = sprite.position
-            bx, by = self.position
-            w, h = self.scale
-            if x >= bx and x <= bx+w and y >= by and y <= by+h:
-                return True
-            else:
-                return False
-
-        def intersects(self, _range):
-            x, y = self.position
-            w, h = self.scale
-            xr, yr = _range.position
-            wr, hr= _range.scale
-            if xr > x+w or xr+wr < x-w or yr > y+h or yr+hr < y-h:
-                return True
-            else:
-                return False
-
-        # Commenting out Draw methods for now until I can figure out how to get them drawn properly.
-        """ def Draw(self):
-            x, y = self.position
-            w, h = self.scale
-            gl.geometry.screen_rectangle(self.position[0], self.scale[0], self.position, self.line_thickness) """
-
-    class Circle:
-        def __init__(self, position, radius):
-            self.position = position
-            self.radius = radius
-            self.sqradius = self.radius * self.radius
-            self.scale = None
-            self.line_thickness = 0
-
-        def contains_sprite(self, sprite):
-            x1, y1 = self.position
-            x2, y2 = sprite.position
-            distance = pow(x2-x1, 2) + pow(y2-y1, 2)
-            if distance <= self.sqradius:
-                return True
-            else:
-                return False
-
-        def intersects(self, _range):
-            x1, y1 = self.position
-            x2, y2 = _range.position
-            w, h = _range.scale
-            r = self.radius
-            distance_x, distance_y = abs(x2-x2), abs(y2-y1)
-
-            edges = pow(distance_x-w, 2) + pow(distance_y-h, 2)
-
-            if distance_x > (r+w) or distance_y > (r+h):
-                return False
-            
-            if distance_x <= w or distance_y <= h:
-                return True
-            
-            return (edges <= self.sqradius)
-
-        # Commenting out Draw methods for now until I can figure out how to get them drawn properly.
-        """ def Draw(self):
-            gl.geometry.????() """
+    def remove(self, sprite):
+        self.sprites.remove(sprite)
+        sprite.spatial_manager = None
 
     def on_update(self, delta_time):
-        # TODO: Recalculates buckets, adds sprites and spritelists to track
-        pass
+        self.initialize_nodes()
+        for sprite in self.sprites:
+            self.root.insert(sprite)
 
-    def get_nearby(self):
-        # TODO: Called after on_update has ran to get objects nearby a certain x, y
-        pass
+    def get_nearby(self, x, y, range=250.0):
+        side = range / 2.0
+        x_min = x - side
+        x_max = x + side
+        y_min = y - side
+        y_max = y + side
+        return self.root.retrieve_rectangle(x_min, x_max, y_min, y_max)
+
+    def get_nearby_circle(self, x, y, radius=125.0):
+        rectangle_results = self.root.retrieve_rectangle(x - radius, x + radius, y - radius, y + radius)
+        results = []
+        for result in rectangle_results:
+            if arcade.get_distance(x, y, result.center_x, result.center_y) <= radius:
+                results.append(result)
+        return results if results else None
+
+    class node():
+        def __init__(self, level, x_min, x_max, y_min, y_max):
+            self.level = 0
+            self.x_min = x_min
+            self.x_max = x_max
+            self.x_split = (x_max - x_min) / 2.0
+            self.y_min = y_min
+            self.y_max = y_max
+            self.y_split = (y_max - y_min) / 2.0
+            self.parent = None
+            self.northwest = None
+            self.northeast = None
+            self.southeast = None
+            self.southwest = None
+            self.sprites = []
+
+        def split(self):
+            new_level = self.level + 1
+            self.northwest = type(self)(new_level, self.x_min, self.x_split, self.y_split, self.y_max)
+            self.northeast = type(self)(new_level, self.x_split, self.x_max, self.y_split, self.y_max)
+            self.southeast = type(self)(new_level, self.x_split, self.x_max, self.y_min, self.y_split)
+            self.southwest = type(self)(new_level, self.x_min, self.x_split, self.y_min, self.y_split)
+            self.northwest.parent = self
+            self.northeast.parent = self
+            self.southwest.parent = self
+            self.southeast.parent = self
+
+            for sprite in self.sprites:
+                self.get_quad(sprite.center_x, sprite.center_y).sprites.append(sprite)
+
+            self.sprites.clear()
+
+        def get_quad(self, x, y):
+            if y < self.y_split:
+                if x < self.x_split:
+                    return self.southwest
+                else:
+                    return self.southeast
+            else:
+                if x < self.x_split:
+                    return self.northwest
+                else:
+                    return self.northeast
+
+        def insert(self, sprite):
+            desired_quad = self.get_quad(sprite.center_x, sprite.center_y)
+            if desired_quad:
+                desired_quad.insert(sprite)
+            else:
+                if len(self.sprites) < NODE_CAPACITY or self.level + 1 < MAX_LEVELS:
+                    self.sprites.append(sprite)
+                elif self.level + 1 < MAX_LEVELS:
+                    self.split()
+                    desired_quad = self.get_quad(sprite.center_x, sprite.center_y)
+                    desired_quad.insert(sprite)
+
+        def retrieve(self, x, y):
+            desired_quad = self.get_quad(x, y)
+            if desired_quad:
+                return desired_quad.retrieve(x, y)
+            else:
+                return self.sprites
+
+        def retrieve_rectangle(self, x_min, x_max, y_min, y_max):
+            if not self.intersects_rectangle(x_min, x_max, y_min, y_max):
+                return None
+            elif not self.northwest:
+                result = []
+                for sprite in self.sprites:
+                    half_height = sprite.height / 2
+                    half_width = sprite.width / 2
+                    sprite_x_min = sprite.center_x - half_width
+                    sprite_x_max = sprite.center_x + half_width
+                    sprite_y_min = sprite.center_y - half_height
+                    sprite_y_max = sprite.center_y + half_height
+                    if x_max < sprite_x_min or x_min > sprite_x_max or y_max < sprite_y_min or y_min > sprite_y_max:
+                        continue
+                    else:
+                        result.append(sprite)
+                return result if result else None
+            else:
+                nw_sprites = self.northwest.retrieve_rectangle(x_min, x_max, y_min, y_max)
+                ne_sprites = self.northeast.retrieve_rectangle(x_min, x_max, y_min, y_max)
+                sw_sprites = self.southwest.retrieve_rectangle(x_min, x_max, y_min, y_max)
+                se_sprites = self.southeast.retrieve_rectangle(x_min, x_max, y_min, y_max)
+                result = []
+                if nw_sprites:
+                    result.extend(nw_sprites)
+                if ne_sprites:
+                    result.extend(ne_sprites)
+                if sw_sprites:
+                    result.extend(sw_sprites)
+                if se_sprites:
+                    result.extend(se_sprites)
+                return result if result else None
+
+        def intersects_rectangle(self, x_min, x_max, y_min, y_max):
+            if x_max < self.x_min or x_min > self.x_max or y_max < self.y_min or y_min > self.y_max:
+                return False
+            else:
+                return True
