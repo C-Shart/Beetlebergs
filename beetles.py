@@ -20,8 +20,8 @@ DEFAULT_MAX_ROTATION = math.pi / 360.0
 DEFAULT_AWARENESS = 1
 DEFAULT_VISION = 250
 DEFAULT_ACCURACY = 25
-SEARCH_RANGE = 750
-ENGAGEMENT_RANGE = 250
+SEARCH_RANGE = 200
+ENGAGEMENT_RANGE = 150
 ENGAGEMENT_EPSILON = 10
 
 class Beetle(arcade.Sprite):
@@ -93,6 +93,12 @@ class Beetle(arcade.Sprite):
         delta_y = target_y - self.center_y
         return math.atan2(delta_y, delta_x)
 
+    def get_components_to_location(self, target_x, target_y):
+        delta_x = target_x - self.center_x
+        delta_y = target_y - self.center_y
+        angle = math.atan2(delta_y, delta_x)
+        return (math.cos(angle), math.sin(angle))
+
     def decide_facing(self, delta_time):
         if not self.angle_target and self.facing_cooldown <= 0.0:
             self.facing_cooldown = 0.0
@@ -127,7 +133,7 @@ class Beetle(arcade.Sprite):
                 nearby_sprites = self.spatial_manager.get_nearby_circle(self.center_x, self.center_y, SEARCH_RANGE)
                 nearby_enemies = [sprite for sprite in nearby_sprites if isinstance(sprite, Beetle) and sprite.team.color != self.team.color]
                 if nearby_enemies:
-                    self.targeted_beetle = min(nearby_enemies, key=lambda b: b.hit_points)
+                    self.targeted_beetle = min(nearby_enemies, key=lambda b: arcade.get_distance(self.center_x, self.center_y, b.center_x, b.center_y))
                     self.move_target = None # Kill state code will handle movement
                     self.logic_state_machine.target_acquired()
                 elif not self.move_target:
@@ -138,17 +144,11 @@ class Beetle(arcade.Sprite):
                     distance_to_target = arcade.get_distance(self.center_x, self.center_y, target.center_x, target.center_y)
                     delta_to_engagement = ENGAGEMENT_RANGE - distance_to_target
                     if abs(delta_to_engagement) > ENGAGEMENT_EPSILON:
-                        if delta_to_engagement < 0:
-                            print(f"Too far away at {distance_to_target} rather than {ENGAGEMENT_RANGE}, closing in")
-                        else:
-                            print(f"Too close at {distance_to_target} rather than {ENGAGEMENT_RANGE}, moving away")
-                        angle_to_target = self.get_raw_angle_to_location(target.center_x, target.center_y)
-                        distance_to_move_to = -delta_to_engagement
-                        x_to_move_target = distance_to_move_to * math.cos(angle_to_target)
-                        y_to_move_target = distance_to_move_to * math.sin(angle_to_target)
-                        self.move_target = (self.center_x + x_to_move_target, target.center_y + y_to_move_target)
+                        component_x, component_y = self.get_components_to_location(target.center_x, target.center_y)
+                        x_to_move_target = -delta_to_engagement * component_x
+                        y_to_move_target = -delta_to_engagement * component_y
+                        self.move_target = (self.center_x + x_to_move_target, self.center_y + y_to_move_target)
                     else:
-                        print(f"near enough to engagement distance {ENGAGEMENT_RANGE} at {distance_to_target}")
                         self.move_target = None
                     self.set_facing(self.targeted_beetle.center_x, self.targeted_beetle.center_y)
                 else:
@@ -176,9 +176,9 @@ class Beetle(arcade.Sprite):
                     self.move_target = None
                     self.physics_engine.set_velocity(self, (0.0 , 0.0))
                 else:
-                    target_angle = math.atan2(delta_y, delta_x)
-                    x_velocity = math.cos(target_angle) * BEETLE_MOVE_FORCE
-                    y_velocity = math.sin(target_angle) * BEETLE_MOVE_FORCE
+                    x_component, y_component = self.get_components_to_location(target_x, target_y)
+                    x_velocity = x_component * BEETLE_MOVE_FORCE
+                    y_velocity = y_component * BEETLE_MOVE_FORCE
                     self.physics_engine.set_velocity(self, (x_velocity, y_velocity))
             else:
                 self.physics_engine.set_velocity(self, (0.0 , 0.0))
