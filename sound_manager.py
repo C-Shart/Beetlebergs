@@ -1,31 +1,40 @@
 from arcade import Sound, load_sound
 
 DEFAULT_VOLUME = 0.7
-SFXPATH_BEETLE_HIT = "Assets/Sound/SFX/impact2_noisecollector.wav"
-SFXPATH_BEETLE_DEAD = "Assets/Sound/SFX/beetle_dead_mixkit.wav"
-SFX_PATH_PEASHOOTER = "Assets\Sound\SFX\pew_xtrgamr.wav"
+SFX_BEETLE_HIT = "Assets/Sound/SFX/impact2_noisecollector.wav"
+SFX_BEETLE_DEAD = "Assets/Sound/SFX/beetle_dead_mixkit.wav"
+SFX_PEASHOOTER = "Assets/Sound/SFX/pew_xtrgamr.wav"
+
+MUSIC_BANJOS_PLACEHOLDER = "Assets/Sound/Music/banjo_loop.wav"
+
+BEETLE_HIT = "BeetleHit"
+BEETLE_DEAD = "BeetleDead"
+PEASHOOTER_PEW = "PeashooterPew"
 
 class SoundManager:
+    # instance = __class__() # This creates the sound manager as a singleton instance
+    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/#
+
     def __init__(self):
         self.audio_player = Sound()
-        self.sfx_beetle_dead = load_sound(SFXPATH_BEETLE_DEAD)
-        self.sfx_beetle_hit = load_sound(SFXPATH_BEETLE_HIT)
-        self.peashooter_pew = load_sound(SFX_PATH_PEASHOOTER)
-
-    def setup(self):
-        self.set_volume(DEFAULT_VOLUME)
+        self.sounds = {
+            BEETLE_HIT: load_sound(SFX_BEETLE_DEAD), 
+            BEETLE_DEAD: load_sound(SFX_BEETLE_HIT), 
+            PEASHOOTER_PEW: load_sound(SFX_PEASHOOTER)
+        }
+        self.audio_player.set_volume = DEFAULT_VOLUME
 
     def set_volume(self, volume=None):
         if not volume:
-            self.audio_player.set_volume = 0.7
+            self.audio_player.set_volume = DEFAULT_VOLUME
         else:
             self.audio_player.set_volume = volume
 
-    def play_sound(self, sound):
-        if not sound:
-            pass
+    def play_sound(self, sound_key):
+        if not sound_key:
+            raise Exception("No sound to play!")
         else:
-            self.audio_player.play(sound)
+            self.audio_player.play(self.sounds[sound_key], DEFAULT_VOLUME)
 
     def stop_sound(self, sound):
         if not sound:
