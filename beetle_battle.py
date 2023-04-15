@@ -67,10 +67,10 @@ class BeetleBattle(arcade.View):
         self.red_team.other_team = self.green_team
 
         # DEBUG: Lowering the beetle's HP so this doesn't take forever
-        for beetle in self.green_team.beetles:
-            beetle.hit_points = 13
-        for beetle in self.red_team.beetles:
-            beetle.hit_points = 13
+        # for beetle in self.green_team.beetles:
+        #     beetle.hit_points = 13
+        # for beetle in self.red_team.beetles:
+        #     beetle.hit_points = 13
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
 

@@ -20,6 +20,9 @@ DEFAULT_MAX_ROTATION = math.pi / 360.0
 DEFAULT_AWARENESS = 1
 DEFAULT_VISION = 250
 DEFAULT_ACCURACY = 25
+SEARCH_RANGE = 750
+ENGAGEMENT_RANGE = 250
+ENGAGEMENT_EPSILON = 10
 
 class Beetle(arcade.Sprite):
     def __init__(self, team, center_x=0, center_y=0):
@@ -80,10 +83,15 @@ class Beetle(arcade.Sprite):
             angle += math.pi * 2.0
         return angle
 
-    def get_angle_to_location(self, target_x, target_y):
+    def get_facing_angle_to_location(self, target_x, target_y):
         delta_x = target_x - self.center_x
         delta_y = target_y - self.center_y
         return self.get_sprite_adjusted_angle_rad(math.atan2(delta_y, delta_x))
+
+    def get_raw_angle_to_location(self, target_x, target_y):
+        delta_x = target_x - self.center_x
+        delta_y = target_y - self.center_y
+        return math.atan2(delta_y, delta_x)
 
     def decide_facing(self, delta_time):
         if not self.angle_target and self.facing_cooldown <= 0.0:
@@ -97,20 +105,18 @@ class Beetle(arcade.Sprite):
             self.move_target = (random.randrange(0, 1280), random.randrange(0, 720))
 
     def set_facing(self, target_x, target_y):
-        self.angle_target = self.get_angle_to_location(target_x, target_y)
+        self.angle_target = self.get_facing_angle_to_location(target_x, target_y)
 
     def move_to(self, target_x, target_y):
         self.move_target = (target_x, target_y)
         # TODO: Do we need this anymore if we're just setting move_target?
 
     def draw(self):
-        # TODO: handle drawing the beetle
         super().draw()
         for ability in self.abilities:
             ability.draw()
 
     def on_update(self, delta_time):
-        # TODO: Called every frame, will be used to update the beetle, performing its actions during battle
         super().on_update(delta_time)
 
         if self.active:
@@ -118,18 +124,38 @@ class Beetle(arcade.Sprite):
             if current_state == __class__.logic.start_idle:
                 self.logic_state_machine.start_battle()
             elif current_state == __class__.logic.find_target:
-                self.targeted_beetle = random.choice(self.team.other_team.beetles)
-                self.logic_state_machine.target_acquired()
+                nearby_sprites = self.spatial_manager.get_nearby_circle(self.center_x, self.center_y, SEARCH_RANGE)
+                nearby_enemies = [sprite for sprite in nearby_sprites if isinstance(sprite, Beetle) and sprite.team.color != self.team.color]
+                if nearby_enemies:
+                    self.targeted_beetle = min(nearby_enemies, key=lambda b: b.hit_points)
+                    self.move_target = None # Kill state code will handle movement
+                    self.logic_state_machine.target_acquired()
+                elif not self.move_target:
+                    self.move_target = (random.randrange(0, 1280), random.randrange(0, 720))
             elif current_state == __class__.logic.kill_target:
                 if self.targeted_beetle.hit_points > 0:
+                    target = self.targeted_beetle
+                    distance_to_target = arcade.get_distance(self.center_x, self.center_y, target.center_x, target.center_y)
+                    delta_to_engagement = ENGAGEMENT_RANGE - distance_to_target
+                    if abs(delta_to_engagement) > ENGAGEMENT_EPSILON:
+                        if delta_to_engagement < 0:
+                            print(f"Too far away at {distance_to_target} rather than {ENGAGEMENT_RANGE}, closing in")
+                        else:
+                            print(f"Too close at {distance_to_target} rather than {ENGAGEMENT_RANGE}, moving away")
+                        angle_to_target = self.get_raw_angle_to_location(target.center_x, target.center_y)
+                        distance_to_move_to = -delta_to_engagement
+                        x_to_move_target = distance_to_move_to * math.cos(angle_to_target)
+                        y_to_move_target = distance_to_move_to * math.sin(angle_to_target)
+                        self.move_target = (self.center_x + x_to_move_target, target.center_y + y_to_move_target)
+                    else:
+                        print(f"near enough to engagement distance {ENGAGEMENT_RANGE} at {distance_to_target}")
+                        self.move_target = None
                     self.set_facing(self.targeted_beetle.center_x, self.targeted_beetle.center_y)
                 else:
                     self.targeted_beetle = None
                     self.logic_state_machine.target_eliminated()
             elif current_state == __class__.logic.dead:
                 return
-            self.decide_facing(delta_time)
-            self.decide_position()
 
         for ability in self.abilities:
             ability.on_update(delta_time)
@@ -154,10 +180,11 @@ class Beetle(arcade.Sprite):
                     x_velocity = math.cos(target_angle) * BEETLE_MOVE_FORCE
                     y_velocity = math.sin(target_angle) * BEETLE_MOVE_FORCE
                     self.physics_engine.set_velocity(self, (x_velocity, y_velocity))
+            else:
+                self.physics_engine.set_velocity(self, (0.0 , 0.0))
 
+            body = self.physics_engine.sprites[self].body
             if self.angle_target:
-                body = self.physics_engine.sprites[self].body
-
                 while body.angle > math.pi:
                     body.angle -= 2.0 * math.pi
                 while body.angle < -math.pi:
@@ -172,7 +199,8 @@ class Beetle(arcade.Sprite):
                     body.angular_velocity = BEETLE_ROTATION_SPEED
                 else:
                     body.angular_velocity = -BEETLE_ROTATION_SPEED
-                pass
+            else:
+                body.angular_velocity = 0.0
 
     def damage(self, damage):
         self.hit_points -= damage

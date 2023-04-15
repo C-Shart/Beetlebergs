@@ -62,14 +62,35 @@ Diagram
 
 ```mermaid
 stateDiagram-v2
+[*] --> StartIdle
 StartIdle : Waiting For Battle Start
 FindTarget : Looking for Target
+state FindTarget {
+    [*] --> TargetNearby
+    TargetNearby : Target Nearby?
+    TargetNearby --> [*] : Target Acquired
+    TargetNearby --> MoveRandomly : No
+    MoveRandomly : Move Randomly
+    MoveRandomly --> TargetNearby
+}
+FindTarget --> KillTarget : Target Acquired
 KillTarget : Try to kill Target
+state KillTarget {
+    [*] --> TargetDead
+    TargetDead : Target Dead?
+    TargetDead --> AtRange : No
+    TargetDead --> [*] : New Target
+    AtRange : At Engagement Distance?
+    AtRange --> MoveToRange : No
+    MoveToRange : Move in Range
+    MoveToRange --> FireAway
+    AtRange --> FireAway : Yes
+    FireAway : Fire at Target
+    FireAway --> TargetDead
+}
+KillTarget --> FindTarget : New Target
 Dead : Dead
-    [*] --> StartIdle
     StartIdle --> FindTarget
-    FindTarget --> KillTarget : Target found
-    KillTarget --> FindTarget : Target dead
     FindTarget --> Dead : Beetle dies
     KillTarget --> Dead : Beetle dies
     Dead --> [*]
