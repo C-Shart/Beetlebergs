@@ -1,4 +1,5 @@
 import math
+from arcade import play_sound, load_sound
 from abilities import Ability
 from hazards import Projectile
 from traits import Trait
@@ -9,6 +10,8 @@ DEFAULT_FIRE_RATE = 20.0
 DEFAULT_RANGE = 500.0
 PROJECTILE_MOVE_FORCE = 2500
 PROJECTILE_SCALING = 1
+
+SFX_PATH_PEASHOOTER = "Assets\Sound\SFX\pew_xtrgamr.wav"
 
 class Attack(Ability):
     def __init__(self, acting_beetle):
@@ -25,7 +28,7 @@ class Attack(Ability):
 
     def on_update(self, delta_time):
         super().on_update(delta_time)
-        # TODO: To perform the atack with given beetle during each frame, if needed
+        # TODO: To perform the attack with given beetle during each frame, if needed
         self.time_since_last += delta_time
 
 class RangedAttack(Attack):
@@ -41,10 +44,10 @@ class RangedAttack(Attack):
         # check the cooldown from the acting beetle
         # if ready, generate a new Projectile class
         # otherwise, do nothing
-        # TODO: To perform the atack with given beetle during each frame, if needed
+        # TODO: To perform the attack with given beetle during each frame, if needed
 
 class Peashooter(RangedAttack):
-    PEASHOOTER_COOLDOWN = 0.125
+    PEASHOOTER_COOLDOWN = 1
 
     def __init__(self, acting_beetle):
         super().__init__(acting_beetle)
@@ -67,6 +70,7 @@ class Peashooter(RangedAttack):
             projectile = __class__.projectile(beetle.center_x, beetle.center_y, angle, beetle)
             beetle.team.projectiles_list.append(projectile)
             beetle.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
+            beetle.spatial_manager.add_sprite(projectile)
             self.cooldown = __class__.PEASHOOTER_COOLDOWN
 
     class trait(Trait):
@@ -81,6 +85,7 @@ class Peashooter(RangedAttack):
 
         def __init__(self, center_x, center_y, angle, acting_beetle):
             path = __class__.SPRITE_PATH_GREEN
+
             if acting_beetle.team.color != TeamColor.GREEN:
                 path = __class__.SPRITE_PATH_RED
             super().__init__(path, center_x, center_y, angle, __class__.PEA_POWER, team_color=acting_beetle.team.color)
@@ -92,6 +97,9 @@ class Peashooter(RangedAttack):
 
             # Fixes the angle of the sprite itself, avoiding changing the velocity vector
             self.angle -= 90.0
+            self.peashooter_pew = load_sound(SFX_PATH_PEASHOOTER)
+            peashooter_player = play_sound(self.peashooter_pew)
+            self.peashooter_pew.set_volume(0.0, peashooter_player) # TODO: turn volume back on
 
         def draw(self):
             super().draw()

@@ -2,6 +2,7 @@
 title: 🅱eetle 🅱attle 🅱tate 🅱achine 🅱iagram
 ---
 Tasks
+
 + TASK_PRIMARY_ATTACK
 + TASK_SECONDARY_ATTACKS
 + TASK_CHANGE_TARGET (TASK_ACQUIRE_TARGET separate?)
@@ -23,8 +24,8 @@ Tasks
 + TASK_HALT_MOVEMENT
 + TASK_
 
-
 Schedules
+
 + SCHEDULE_PUSH
 + SCHEDULE_HOLD
 + SCHEDULE_RETREAT
@@ -38,28 +39,61 @@ Schedules
 + SCHEDULE_
 
 Goals
+
 + Attack
-+ Seek 
-
-
++ Seek
 
 States
+
 + Searching
 + Engaged
-+ 
-
 
 Conditions
-+ 
 
++
 
 Sensors
-+ 
 
++
 
 Diagram
+
 ===
 
 ```mermaid
 stateDiagram-v2
-    State: This area is UNDER CONSTRUCTION
+[*] --> StartIdle
+StartIdle : Waiting For Battle Start
+StartIdle --> FindTarget
+
+FindTarget : Looking for Target
+state FindTarget {
+    [*] --> TargetNearby
+    TargetNearby : Target Nearby?
+    TargetNearby --> [*] : Target Acquired
+    TargetNearby --> MoveRandomly : No
+    MoveRandomly : Move Randomly
+    MoveRandomly --> TargetNearby
+}
+FindTarget --> KillTarget : Target Acquired
+FindTarget --> Dead : Beetle dies
+
+KillTarget : Try to kill Target
+state KillTarget {
+    [*] --> TargetDead
+    TargetDead : Target Dead?
+    TargetDead --> AtRange : No
+    TargetDead --> [*] : New Target
+    AtRange : At Engagement Distance?
+    AtRange --> MoveToRange : No
+    MoveToRange : Move in Range
+    MoveToRange --> FireAway
+    AtRange --> FireAway : Yes
+    FireAway : Fire at Target
+    FireAway --> TargetDead
+}
+KillTarget --> FindTarget : New Target
+KillTarget --> Dead : Beetle dies
+
+Dead : Dead
+Dead --> [*]

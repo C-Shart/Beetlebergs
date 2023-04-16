@@ -1,0 +1,10 @@
+BattleNumber
+Timestamp
+For each team:
+	NumberAlive
+	NumberDead
+	DamageTaken
+	DamageGiven
+	TimeSearching
+	TimeKilling
+	ShotAccuracy

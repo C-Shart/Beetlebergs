@@ -20,6 +20,7 @@ class Team:
         self.projectiles_list = arcade.SpriteList()
         self.traits = [Peashooter.trait()] # TODO: Add more traits at random
         self.active = False
+        self.other_team = None
 
     @property
     def active(self):
