@@ -13,9 +13,6 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "BIG BAD BEETLE BALLS"
 
-# DELETETHIS SOUND MODULE TESTING
-MUSIC_BANJOS_PLACEHOLDER = "Assets/Sound/Music/banjo_loop.wav"
-
 class BeetleTestes(arcade.Window):
     def __init__(self):
 
@@ -50,11 +47,6 @@ class BeetleTestes(arcade.Window):
         self.settings_box.add(self.red_auto_button.with_space_around(bottom=20))
         self.settings_box.add(self.reset_button.with_space_around(bottom=20))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
-
-        # DELETETHIS SOUND MODULE TESTING
-        self.song = arcade.load_sound(MUSIC_BANJOS_PLACEHOLDER)
-        self.player = self.song.play(0.7, 0.0, True, 1.0)
-
 
     def setup(self):
         self.background = arcade.load_texture("Assets/Images/octagon.png")
@@ -161,20 +153,11 @@ class BeetleTestes(arcade.Window):
         self.manager.draw()
 
     def on_update(self, delta_time):
-        # DELETETHIS SOUND MODULE TESTING
-        self.is_playing = self.song.is_playing(self.player)
-        self.is_complete = self.song.is_complete(self.player)
-        self.stream_pos = self.song.get_stream_position(self.player)
-        self.length = self.song.get_length()
-
         self.spatial_manager.on_update(delta_time)
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
         self.physics_engine.step()
         self.physics_engine.resync_sprites()
-
-        # DELETETHIS SOUND MODULE TESTING
-        print("LENGTH: {}, STREAM_POS: {}, IS_PLAYING: {}, IS_COMPLETE: {}".format(self.length, self.stream_pos, self.is_playing, self.is_complete))
 
     class TesterMode(Enum):
         SHOOTING = 0,
