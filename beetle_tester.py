@@ -94,6 +94,34 @@ class BeetleTestes(arcade.Window):
 
         self.physics_engine.add_collision_handler("pea", "beetle", pea_handler)
 
+        WALL_WIDTH = 500
+        WALL_OFFSET = 100
+        left_wall = arcade.SpriteSolidColor(WALL_WIDTH, SCREEN_HEIGHT, arcade.color.CYAN)
+        left_wall.center_x = -WALL_WIDTH / 2 + WALL_OFFSET
+        left_wall.center_y = SCREEN_HEIGHT / 2
+        right_wall = arcade.SpriteSolidColor(WALL_WIDTH, SCREEN_HEIGHT, arcade.color.CYAN)
+        right_wall.center_x = SCREEN_WIDTH + WALL_WIDTH / 2 - WALL_OFFSET
+        right_wall.center_y = SCREEN_HEIGHT / 2
+        bottom_wall = arcade.SpriteSolidColor(SCREEN_WIDTH, WALL_WIDTH, arcade.color.CYAN)
+        bottom_wall.center_x = SCREEN_WIDTH / 2
+        bottom_wall.center_y = -WALL_WIDTH / 2 + WALL_OFFSET
+        top_wall = arcade.SpriteSolidColor(SCREEN_WIDTH, WALL_WIDTH, arcade.color.CYAN)
+        top_wall.center_x = SCREEN_WIDTH / 2
+        top_wall.center_y = SCREEN_HEIGHT + WALL_WIDTH / 2 - WALL_OFFSET
+        self.wall_list = arcade.SpriteList()
+        self.wall_list.append(left_wall)
+        self.wall_list.append(right_wall)
+        self.wall_list.append(bottom_wall)
+        self.wall_list.append(top_wall)
+        self.physics_engine.add_sprite_list(
+            self.wall_list,
+            collision_type="wall",
+            body_type=arcade.PymunkPhysicsEngine.STATIC)
+
+        def wall_handler(_pea, _wall, _arbiter, _space, _data):
+            return False
+        self.physics_engine.add_collision_handler("pea", "wall", wall_handler)
+
         self.spatial_manager = SpatialManager()
         self.spatial_manager.add_sprite_list(self.green_team.beetles)
         self.spatial_manager.add_sprite_list(self.red_team.beetles)
@@ -149,6 +177,7 @@ class BeetleTestes(arcade.Window):
         arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
         self.green_team.on_draw()
         self.red_team.on_draw()
+        # self.wall_list.draw() # Not drawn by default but could be useful to see for debugging
         self.manager.draw()
 
     def on_update(self, delta_time):
