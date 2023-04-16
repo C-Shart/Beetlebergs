@@ -53,12 +53,12 @@ class BeetleBattle(arcade.View):
 
     def setup(self):
         BEETLES_PER_TEAM = 10
-        self.green_team = Team(TeamColor.GREEN, 605, 275)
+        self.green_team = Team(TeamColor.GREEN, 605, 350)
         for _ in range(BEETLES_PER_TEAM - 1):
             self.green_team.beetles.append(Beetle(self.green_team))
         self.green_team.set_up_team()
 
-        self.red_team = Team(TeamColor.RED, 705, 275)
+        self.red_team = Team(TeamColor.RED, 705, 350)
         for _ in range(BEETLES_PER_TEAM - 1):
             self.red_team.beetles.append(Beetle(self.red_team))
         self.red_team.set_up_team()

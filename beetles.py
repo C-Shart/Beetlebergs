@@ -10,8 +10,8 @@ SFXPATH_BEETLE_HIT = "Assets/Sound/SFX/impact2_noisecollector.wav"
 SFXPATH_BEETLE_DEAD = "Assets/Sound/SFX/beetle_dead_mixkit.wav"
 
 BEETLE_SCALING = 1
-BEETLE_MOVE_FORCE = 500
-BEETLE_ROTATION_SPEED = math.pi
+BEETLE_MOVE_FORCE = 175
+BEETLE_ROTATION_SPEED = math.pi * 1.5
 BEETLE_ROTATION_EPSILON = math.pi / 90.0
 DEFAULT_HIT_POINTS = 100
 DEFAULT_MAX_FORWARD = 150.0
@@ -20,7 +20,7 @@ DEFAULT_MAX_ROTATION = math.pi / 360.0
 DEFAULT_AWARENESS = 1
 DEFAULT_VISION = 250
 DEFAULT_ACCURACY = 25
-SEARCH_RANGE = 200
+SEARCH_RANGE = 160
 ENGAGEMENT_RANGE = 150
 ENGAGEMENT_EPSILON = 10
 
@@ -136,7 +136,8 @@ class Beetle(arcade.Sprite):
                     self.move_target = None # Kill state code will handle movement
                     self.logic_state_machine.target_acquired()
                 elif not self.move_target:
-                    self.move_target = (random.randrange(0, 1280), random.randrange(0, 720))
+                    self.move_target = (random.randrange(100, 1180), random.randrange(100, 620))
+                    self.set_facing(self.move_target[0], self.move_target[1])
             elif current_state == __class__.logic.kill_target:
                 if self.targeted_beetle.hit_points > 0:
                     target = self.targeted_beetle
@@ -154,7 +155,7 @@ class Beetle(arcade.Sprite):
                         # Strafe sideways by rotating the vector to the target by 90 degrees (x, y) -> (y, -x)
                         if self.strafe_left is None:
                             self.strafe_left = random.random() < 0.50
-                        elif random.random() < 0.13:
+                        elif random.random() < 0.065:
                             self.strafe_left = not self.strafe_left
                         x_to_move_target = 3 * ENGAGEMENT_EPSILON * component_y
                         y_to_move_target = -3 * ENGAGEMENT_EPSILON * component_x
