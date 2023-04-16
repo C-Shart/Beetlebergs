@@ -52,6 +52,7 @@ class Beetle(arcade.Sprite):
         self.x_velocity = 0
         self.y_velocity = 0
         self.move_target = None
+        self.strafe_left = None
         self.angle_target = None
         self.facing_cooldown = 0.0
         self.targeted_beetle = None
@@ -94,9 +95,7 @@ class Beetle(arcade.Sprite):
         return math.atan2(delta_y, delta_x)
 
     def get_components_to_location(self, target_x, target_y):
-        delta_x = target_x - self.center_x
-        delta_y = target_y - self.center_y
-        angle = math.atan2(delta_y, delta_x)
+        angle = self.get_raw_angle_to_location(target_x, target_y)
         return (math.cos(angle), math.sin(angle))
 
     def decide_facing(self, delta_time):
@@ -143,15 +142,29 @@ class Beetle(arcade.Sprite):
                     target = self.targeted_beetle
                     distance_to_target = arcade.get_distance(self.center_x, self.center_y, target.center_x, target.center_y)
                     delta_to_engagement = ENGAGEMENT_RANGE - distance_to_target
+                    component_x, component_y = self.get_components_to_location(target.center_x, target.center_y)
+                    x_to_move_target = 0.0
+                    y_to_move_target = 0.0
                     if abs(delta_to_engagement) > ENGAGEMENT_EPSILON:
-                        component_x, component_y = self.get_components_to_location(target.center_x, target.center_y)
-                        x_to_move_target = -delta_to_engagement * component_x
-                        y_to_move_target = -delta_to_engagement * component_y
-                        self.move_target = (self.center_x + x_to_move_target, self.center_y + y_to_move_target)
+                        # pick a move target with some random jitter to encourage slightly different targets between
+                        # beetles
+                        x_to_move_target = -delta_to_engagement * component_x + random.gauss(sigma=ENGAGEMENT_EPSILON*3)
+                        y_to_move_target = -delta_to_engagement * component_y + random.gauss(sigma=ENGAGEMENT_EPSILON*3)
                     else:
-                        self.move_target = None
+                        # Strafe sideways by rotating the vector to the target by 90 degrees (x, y) -> (y, -x)
+                        if self.strafe_left is None:
+                            self.strafe_left = random.random() < 0.50
+                        elif random.random() < 0.13:
+                            self.strafe_left = not self.strafe_left
+                        x_to_move_target = 3 * ENGAGEMENT_EPSILON * component_y
+                        y_to_move_target = -3 * ENGAGEMENT_EPSILON * component_x
+                        if not self.strafe_left:
+                            x_to_move_target *= -1
+                            y_to_move_target *= -1
+                    self.move_target = (self.center_x + x_to_move_target, self.center_y + y_to_move_target)
                     self.set_facing(self.targeted_beetle.center_x, self.targeted_beetle.center_y)
                 else:
+                    self.strafe_left = None
                     self.targeted_beetle = None
                     self.logic_state_machine.target_eliminated()
             elif current_state == __class__.logic.dead:
