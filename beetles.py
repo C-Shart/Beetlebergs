@@ -191,6 +191,13 @@ class Beetle(arcade.Sprite):
                     body.angle += 2.0 * math.pi
 
                 delta_rotation = self.angle_target - body.angle
+
+                # If the rotation delta is more than 180 degrees, then choose the equivalent acute rotation
+                if delta_rotation > math.pi:
+                    delta_rotation = -(2.0 * math.pi - delta_rotation)
+                elif delta_rotation < -math.pi:
+                    delta_rotation = 2.0 * math.pi + delta_rotation
+
                 if abs(delta_rotation) < BEETLE_ROTATION_EPSILON:
                     self.angle_target = None
                     body.angular_velocity = 0.0
