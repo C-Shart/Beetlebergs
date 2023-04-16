@@ -8,10 +8,6 @@ from sound_manager import SoundManager
 from teams import Team
 from team_color import TeamColor
 
-# DELETETHIS SOUND MODULE TESTING
-from arcade import Sound, load_sound
-from pyglet import media
-
 # Constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -57,8 +53,7 @@ class BeetleTestes(arcade.Window):
 
         # DELETETHIS SOUND MODULE TESTING
         self.song = arcade.load_sound(MUSIC_BANJOS_PLACEHOLDER)
-        self.song.play(0.7, 0.0, True, 1.0)
-        self.player = media.player.Player()
+        self.player = self.song.play(0.7, 0.0, True, 1.0)
 
 
     def setup(self):
@@ -93,15 +88,6 @@ class BeetleTestes(arcade.Window):
                                             damping = 1.0,
                                             collision_type="beetle"
                                             )
-
-        # DELETETHIS SOUND MODULE TESTING
-        self.player.play()
-
-        # DELETETHIS SOUND MODULE TESTING
-        self.is_playing = self.song.is_playing(self.player)
-        self.is_complete = self.song.is_complete(self.player)
-        self.stream_pos = self.song.get_stream_position(self.player)
-        self.length = self.song.get_length()
 
         def pea_handler(pea, beetle, _arbiter, _space, _data):
             if pea and beetle:
@@ -175,6 +161,12 @@ class BeetleTestes(arcade.Window):
         self.manager.draw()
 
     def on_update(self, delta_time):
+        # DELETETHIS SOUND MODULE TESTING
+        self.is_playing = self.song.is_playing(self.player)
+        self.is_complete = self.song.is_complete(self.player)
+        self.stream_pos = self.song.get_stream_position(self.player)
+        self.length = self.song.get_length()
+
         self.spatial_manager.on_update(delta_time)
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
