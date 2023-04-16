@@ -28,7 +28,7 @@ class Attack(Ability):
 
     def on_update(self, delta_time):
         super().on_update(delta_time)
-        # TODO: To perform the atack with given beetle during each frame, if needed
+        # TODO: To perform the attack with given beetle during each frame, if needed
         self.time_since_last += delta_time
 
 class RangedAttack(Attack):
@@ -44,7 +44,7 @@ class RangedAttack(Attack):
         # check the cooldown from the acting beetle
         # if ready, generate a new Projectile class
         # otherwise, do nothing
-        # TODO: To perform the atack with given beetle during each frame, if needed
+        # TODO: To perform the attack with given beetle during each frame, if needed
 
 class Peashooter(RangedAttack):
     PEASHOOTER_COOLDOWN = 0.5
