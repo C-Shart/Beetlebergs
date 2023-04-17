@@ -24,22 +24,26 @@ class BeetleBattle(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-        self.ui_box = arcade.gui.UIBoxLayout()
-
         arcade.load_font("Assets/Fonts/LuckiestGuy-Regular.ttf")
         self.buttons_style = {"font_name": "Luckiest Guy"}
 
-        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center", anchor_y="center", child=self.ui_box))
+        self.ui_bg_texture = arcade.load_texture(":resources:gui_basic_assets/window/grey_panel.png")
 
+        self.settings_box = arcade.gui.UIBoxLayout()
+
+        self.battles_to_run = 5
+        self.battle_count_box = arcade.gui.UIBoxLayout(vertical=False)
+        self.battle_count_label = None
+        self.battle_count_text = None
+
+        self.status_text_label = arcade.gui.UILabel(font_size=24, text_color=arcade.color.RED)
+
+        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
+        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center", anchor_y="bottom", child=self.status_text_label))
     def on_show_view(self):
         arcade.set_background_color(arcade.color.WHITE)
         self.background = arcade.load_texture("Assets/Images/octagon.png")
         arcade.set_viewport(0, self.window.width, 0, self.window.height)
-
-    def on_hide_view(self):
-        # Doing this because otherwise it's possible to get into a weird state where the confirm button still accepts
-        # input on the TitleView
-        self.ui_box.clear()
 
     def setup(self):
         BEETLES_PER_TEAM = 10
@@ -127,7 +131,18 @@ class BeetleBattle(arcade.View):
         self.spatial_manager.add_sprite_list(self.green_team.beetles)
         self.spatial_manager.add_sprite_list(self.red_team.beetles)
 
-        self.ui_box.clear()
+        self.battle_count_label = arcade.gui.UILabel(text="Battles to Run for (Blank for Indefinitely)")
+        self.battle_count_label.fit_content()
+        self.battle_count_text = arcade.gui.UIInputText(text="5", width=50, height=25)
+        self.battle_count_box.add(self.battle_count_label)
+        self.battle_count_box.add(
+            arcade.gui.UITexturePane(
+                self.battle_count_text,
+                tex=self.ui_bg_texture,
+                padding=(10, 10, 10, 10),
+            )
+        )
+        self.settings_box.add(self.battle_count_box.with_space_around(bottom=20))
 
     def on_draw(self):
         arcade.start_render()
@@ -138,6 +153,25 @@ class BeetleBattle(arcade.View):
         self.manager.draw()
 
     def on_update(self, delta_time):
+        try:
+            desired_battle_text = self.battle_count_text.text
+            if desired_battle_text == "" or desired_battle_text.isspace():
+                self.status_text_label.text = ""
+                if self.battles_to_run != -1:
+                    self.battles_to_run = -1 # To represent indefinitely
+                    print("Set battles to run indefinitely")
+            else:
+                desired_battle_int = int(desired_battle_text)
+                if desired_battle_int < 1:
+                    raise ValueError("Must be at least one battle")
+                self.status_text_label.text = ""
+                if self.battles_to_run != desired_battle_int:
+                    self.battles_to_run = desired_battle_int
+                    print(f"Set battles to run to {self.battles_to_run}")
+        except ValueError:
+            self.status_text_label.text = "Invalid number of battles requested; must be an integer of at least 1"
+            self.status_text_label.fit_content()
+
         self.spatial_manager.on_update(delta_time)
         self.green_team.on_update(delta_time)
         self.red_team.on_update(delta_time)
