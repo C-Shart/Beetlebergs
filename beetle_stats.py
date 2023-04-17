@@ -32,20 +32,59 @@ class BeetleBattle(arcade.View):
         self.settings_box = arcade.gui.UIBoxLayout()
 
         self.battles_to_run = 5
+        self.battles_left = None
+        self.battles_ran = 0
+        self.running_battles = False
         self.battle_count_box = arcade.gui.UIBoxLayout(vertical=False)
         self.battle_count_label = None
         self.battle_count_text = None
+
+        self.start_button = None
+        self.pause_button = None
+        self.reset_button = None
 
         self.status_text_label = arcade.gui.UILabel(font_size=24, text_color=arcade.color.RED)
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center", anchor_y="bottom", child=self.status_text_label))
+
     def on_show_view(self):
         arcade.set_background_color(arcade.color.WHITE)
         self.background = arcade.load_texture("Assets/Images/octagon.png")
         arcade.set_viewport(0, self.window.width, 0, self.window.height)
 
     def setup(self):
+        self.reset_battle()
+
+        self.settings_box.clear()
+
+        if not self.battle_count_text:
+            self.battle_count_label = arcade.gui.UILabel(text="Battles to Run for (Blank for Indefinitely)")
+            self.battle_count_label.fit_content()
+            self.battle_count_text = arcade.gui.UIInputText(text="5", width=50, height=25)
+            self.battle_count_box.add(self.battle_count_label)
+            self.battle_count_box.add(
+                arcade.gui.UITexturePane(
+                    self.battle_count_text,
+                    tex=self.ui_bg_texture,
+                    padding=(10, 10, 10, 10),
+                )
+            )
+        self.settings_box.add(self.battle_count_box.with_space_around(bottom=20))
+
+        self.start_button = arcade.gui.UIFlatButton(text="Start Battles", width=300)
+        self.start_button.on_click = self.on_click_start
+        self.settings_box.add(self.start_button)
+
+        self.pause_button = arcade.gui.UIFlatButton(text="Pause Battles", width=300)
+        self.pause_button.on_click = self.on_click_pause
+        # Will be added after Start button pressed
+
+        self.reset_button = arcade.gui.UIFlatButton(text="Write Data and Reset", width=300)
+        self.reset_button.on_click = self.on_click_reset
+        # Will be added after Pause button pressed or Battles end
+
+    def reset_battle(self):
         BEETLES_PER_TEAM = 10
         self.green_team = Team(TeamColor.GREEN, 605, 350)
         for _ in range(BEETLES_PER_TEAM - 1):
@@ -131,18 +170,31 @@ class BeetleBattle(arcade.View):
         self.spatial_manager.add_sprite_list(self.green_team.beetles)
         self.spatial_manager.add_sprite_list(self.red_team.beetles)
 
-        self.battle_count_label = arcade.gui.UILabel(text="Battles to Run for (Blank for Indefinitely)")
-        self.battle_count_label.fit_content()
-        self.battle_count_text = arcade.gui.UIInputText(text="5", width=50, height=25)
-        self.battle_count_box.add(self.battle_count_label)
-        self.battle_count_box.add(
-            arcade.gui.UITexturePane(
-                self.battle_count_text,
-                tex=self.ui_bg_texture,
-                padding=(10, 10, 10, 10),
-            )
-        )
-        self.settings_box.add(self.battle_count_box.with_space_around(bottom=20))
+    def on_click_start(self, event):
+        if self.status_text_label.text:
+            return # Don't allow the battles to start when there's bad input
+        self.settings_box.clear()
+        self.settings_box.add(self.pause_button)
+
+        self.running_battles = True
+        self.green_team.active = True
+        self.red_team.active = True
+
+    def on_click_pause(self, event):
+        self.settings_box.clear()
+        self.start_button.text = "Restart Battles"
+        self.settings_box.add(self.start_button.with_space_around(bottom=20))
+        self.settings_box.add(self.reset_button)
+
+        self.running_battles = False
+        self.green_team.active = False
+        self.red_team.active = False
+
+    def on_click_reset(self, event):
+        # TODO: Write Data
+        self.battles_left = None
+        self.battles_ran = 0
+        self.setup()
 
     def on_draw(self):
         arcade.start_render()
@@ -154,20 +206,21 @@ class BeetleBattle(arcade.View):
 
     def on_update(self, delta_time):
         try:
-            desired_battle_text = self.battle_count_text.text
-            if desired_battle_text == "" or desired_battle_text.isspace():
-                self.status_text_label.text = ""
-                if self.battles_to_run != -1:
-                    self.battles_to_run = -1 # To represent indefinitely
-                    print("Set battles to run indefinitely")
-            else:
-                desired_battle_int = int(desired_battle_text)
-                if desired_battle_int < 1:
-                    raise ValueError("Must be at least one battle")
-                self.status_text_label.text = ""
-                if self.battles_to_run != desired_battle_int:
-                    self.battles_to_run = desired_battle_int
-                    print(f"Set battles to run to {self.battles_to_run}")
+            if self.battle_count_text:
+                desired_battle_text = self.battle_count_text.text
+                if desired_battle_text == "" or desired_battle_text.isspace():
+                    self.status_text_label.text = ""
+                    if self.battles_to_run != -1:
+                        self.battles_to_run = -1 # To represent indefinitely
+                        print("Set battles to run indefinitely")
+                else:
+                    desired_battle_int = int(desired_battle_text)
+                    if desired_battle_int < 1:
+                        raise ValueError("Must be at least one battle")
+                    self.status_text_label.text = ""
+                    if self.battles_to_run != desired_battle_int:
+                        self.battles_to_run = desired_battle_int
+                        print(f"Set battles to run to {self.battles_to_run}")
         except ValueError:
             self.status_text_label.text = "Invalid number of battles requested; must be an integer of at least 1"
             self.status_text_label.fit_content()
@@ -177,6 +230,53 @@ class BeetleBattle(arcade.View):
         self.red_team.on_update(delta_time)
         self.physics_engine.step()
         self.physics_engine.resync_sprites()
+
+        if self.running_battles:
+            if self.battles_left == 0:
+                self.settings_box.clear()
+                self.settings_box.add(self.reset_button)
+                return
+            elif self.battles_left is None:
+                self.battles_left = self.battles_to_run
+
+            green_team_is_alive = False
+            for beetle in self.green_team.beetles:
+                if beetle.hit_points > 0:
+                    green_team_is_alive = True
+                    break
+            red_team_is_alive = False
+            for beetle in self.red_team.beetles:
+                if beetle.hit_points > 0:
+                    red_team_is_alive = True
+                    break
+
+            if not green_team_is_alive or not red_team_is_alive:
+                self.green_team.active = False
+                self.red_team.active = False
+
+                if green_team_is_alive and not red_team_is_alive:
+                    # TODO: Record Green Win
+                    pass
+                elif not green_team_is_alive and red_team_is_alive:
+                    # TODO: Record Red Win
+                    pass
+                else:
+                    # TODO: Record Neutral Win
+                    pass
+
+                # TODO: When I ran indefinitely, the game froze before the 47th battle, which makes me think there's
+                # some recursion or resource limit being hit. Investigate.
+                self.battles_ran += 1
+                print(f"Battle {self.battles_ran} Over!")
+
+                if self.battles_left > 0:
+                    self.battles_left -= 1
+                print(f"{self.battles_left if self.battles_left != -1 else 'Infinite'} battle(s) left...")
+
+                if self.battles_left != 0:
+                    self.reset_battle()
+                    self.green_team.active = True
+                    self.red_team.active = True
 
 if __name__ == "__main__":
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
