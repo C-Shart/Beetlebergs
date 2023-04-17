@@ -45,8 +45,12 @@ class BeetleBattle(arcade.View):
 
         self.status_text_label = arcade.gui.UILabel(font_size=24, text_color=arcade.color.RED)
 
+        self.tally_box = arcade.gui.UIBoxLayout()
+        self.tally_area = None
+
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="left", anchor_y="top", child=self.settings_box))
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center", anchor_y="bottom", child=self.status_text_label))
+        self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="right", anchor_y="top", child=self.tally_box))
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.WHITE)
