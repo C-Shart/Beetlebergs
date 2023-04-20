@@ -1,3 +1,13 @@
+Debug and Version Tracking
+==========================
+HP
+move speed
+rotation speed
+rotation epsilon
+
+
+Game Statistics
+===============
 BattleNumber
 Timestamp
 For each team:
