@@ -44,7 +44,56 @@ class RangedAttack(Attack):
         # check the cooldown from the acting beetle
         # if ready, generate a new Projectile class
         # otherwise, do nothing
-        # TODO: To perform the atack with given beetle during each frame, if needed
+        # TODO: To perform the attack with given beetle during each frame, if needed
+
+class MeleeAttack(Attack):
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
+
+    def draw(self):
+        super().draw()
+        # TODO: Draw the attack
+
+    def on_update(self, delta_time):
+        super().on_update(delta_time)
+        # check the cooldown from the acting beetle
+        # if ready, generate a new Melee attack
+        # otherwise, do nothing
+        # TODO: To perform the attack with given beetle during each frame, if needed
+
+class TriggeredAttack(Attack):
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
+
+    def draw(self):
+        super().draw()
+        # TODO: Draw the attack
+
+    def on_update(self, delta_time):
+        super().on_update(delta_time)
+        # check the cooldown from the acting beetle
+        # if ready, generate a new Melee attack
+        # otherwise, do nothing
+        # TODO: To perform the attack with given beetle during each frame, if needed
+
+class TrapAttack(Attack):
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
+
+    def draw(self):
+        super().draw()
+        # TODO: Draw the attack
+
+    def on_update(self, delta_time):
+        super().on_update(delta_time)
+        # check the cooldown from the acting beetle
+        # if ready, generate a new Melee attack
+        # otherwise, do nothing
+        # TODO: To perform the attack with given beetle during each frame, if needed
+
+# ============== #
+# RANGED ATTACKS #
+# ============== #
 
 class Peashooter(RangedAttack):
     PEASHOOTER_COOLDOWN = 0.5
@@ -107,3 +156,75 @@ class Peashooter(RangedAttack):
             super().on_update(delta_time)
             if self.active:
                 self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))
+
+class Pincers(MeleeAttack):
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
+
+    def draw(self):
+        super().draw()
+        # TODO: Draw the attack
+
+    def on_update(self, delta_time):
+        super().on_update(delta_time)
+        # check the cooldown from the acting beetle
+        # if ready, generate a new Projectile class
+        # otherwise, do nothing
+        # TODO: To perform the attack with given beetle during each frame, if needed
+
+# ============= #
+# MELEE ATTACKS #
+# ============= #
+
+class Pincers(MeleeAttack):
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
+
+    def draw(self):
+        super().draw()
+        # TODO: Draw the attack
+
+    def on_update(self, delta_time):
+        super().on_update(delta_time)
+        # check the cooldown from the acting beetle
+        # if ready, generate a new Projectile class
+        # otherwise, do nothing
+        # TODO: To perform the attack with given beetle during each frame, if needed
+
+# ================= #
+# TRIGGERED ATTACKS #
+# ================= #
+
+class AcidBlood(TriggeredAttack):
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
+
+    def draw(self):
+        super().draw()
+        # TODO: Draw the attack
+
+    def on_update(self, delta_time):
+        super().on_update(delta_time)
+        # check the cooldown from the acting beetle
+        # if ready, generate a new Projectile class
+        # otherwise, do nothing
+        # TODO: To perform the attack with given beetle during each frame, if needed
+
+# ============ #
+# TRAP ATTACKS #
+# ============ #
+
+class Larva(TrapAttack):
+    def __init__(self, acting_beetle):
+        super().__init__(acting_beetle)
+
+    def draw(self):
+        super().draw()
+        # TODO: Draw the attack
+
+    def on_update(self, delta_time):
+        super().on_update(delta_time)
+        # check the cooldown from the acting beetle
+        # if ready, generate a new Projectile class
+        # otherwise, do nothing
+        # TODO: To perform the attack with given beetle during each frame, if needed

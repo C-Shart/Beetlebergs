@@ -503,6 +503,10 @@ There are five basic categories that the Traits can be divided into:
   Basic beetles with Advanced beetles. Sometimes these Advanced beetles may start with certain Traits already given.
 * Stat Change Traits: These Traits change the stats of beetles. They usually affect all beetles on the team but may
   affect only the Advanced beetles. Note that the changes may not be all positive!
+```mermaid
+stateDiagram-v2
+Note: I was thinking about this, and I think stat changes\nsuck as a reward generally. We should roll SOME stat\nchanges up with actual abilities that change beetles\nin more interesting ways.
+```
 * Secondary Attacks/Abilities: These Traits give the beetle a secondary attack.
 * Attack Boosts: These Traits modify how the attacks of the beetle work. They may affect just the primary attack, just
   the secondary attack (if any), or both attacks (if able).
@@ -579,6 +583,10 @@ numbers have been replaced with variables like "X"
   * Fecund: Only for Queen beetles, Trap attack that spawns larvae that eventually become Basic beetles
   * Cannibal: Triggered Response that fires when the beetle collides with beetle corpses or larvae, consuming it,
     healing HP and increasing size
+  * Seeker: Spawns a slow-moving projectile that expires after time X that seeks out the nearest enemy.
+  * Level Up: Basic beetles that successfully land 1(or more?) hits on an enemy beetle turn into an elite for that round only, and revert to basic at the beginning of the next round.
+  * Grapple/Meathook: shoots out and does damage, then either brings beetle to target, or target to beetle, depending which one it is.
+  * Spinning/roly-poly abilities. Beetle charges up and attacks in a straight line? Beetle rolls up and is invincible for a short time?
 * Secondary Attacks/Abilities (all Elite only)
   * Bombardier: adds secondary Ranged attack that travels in an arc and causes damage in an area-of-effect upon landing
   * Missileer: adds secondary Ranged attack that moves in a straight line that can hit others before reaching the end
