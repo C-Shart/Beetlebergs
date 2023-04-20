@@ -1,20 +1,20 @@
-Debug and Version Tracking
-==========================
-HP
-move speed
-rotation speed
-rotation epsilon
-
-
-Game Statistics
-===============
 BattleNumber
 Timestamp
 For each team:
-	NumberAlive
-	NumberDead
-	DamageTaken
-	DamageGiven
-	TimeSearching
-	TimeKilling
-	ShotAccuracy
+	Round Statistics:
+		NumberAlive
+		NumberDead
+		DamageTaken
+		DamageGiven
+		TimeSearching
+		TimeKilling
+		ShotAccuracy
+	Beetle Statistics:
+		HP
+		MoveSpeed
+		Awareness
+		RotationSpeed
+		SearchRange
+		SearchEpsilon
+		EngagementRange
+		EngagementEpsilon
