@@ -157,21 +157,6 @@ class Peashooter(RangedAttack):
             if self.active:
                 self.physics_engine.set_velocity(self, (self.shot_vector[0], self.shot_vector[1]))
 
-class Pincers(MeleeAttack):
-    def __init__(self, acting_beetle):
-        super().__init__(acting_beetle)
-
-    def draw(self):
-        super().draw()
-        # TODO: Draw the attack
-
-    def on_update(self, delta_time):
-        super().on_update(delta_time)
-        # check the cooldown from the acting beetle
-        # if ready, generate a new Projectile class
-        # otherwise, do nothing
-        # TODO: To perform the attack with given beetle during each frame, if needed
-
 # ============= #
 # MELEE ATTACKS #
 # ============= #
@@ -187,7 +172,7 @@ class Pincers(MeleeAttack):
     def on_update(self, delta_time):
         super().on_update(delta_time)
         # check the cooldown from the acting beetle
-        # if ready, generate a new Projectile class
+        # if ready, generate a new Pincers class
         # otherwise, do nothing
         # TODO: To perform the attack with given beetle during each frame, if needed
 
@@ -206,7 +191,7 @@ class AcidBlood(TriggeredAttack):
     def on_update(self, delta_time):
         super().on_update(delta_time)
         # check the cooldown from the acting beetle
-        # if ready, generate a new Projectile class
+        # if ready, generate a new AcidBlood class
         # otherwise, do nothing
         # TODO: To perform the attack with given beetle during each frame, if needed
 
@@ -225,6 +210,6 @@ class Larva(TrapAttack):
     def on_update(self, delta_time):
         super().on_update(delta_time)
         # check the cooldown from the acting beetle
-        # if ready, generate a new Projectile class
+        # if ready, generate a new Larva class
         # otherwise, do nothing
         # TODO: To perform the attack with given beetle during each frame, if needed
