@@ -2,6 +2,7 @@ import arcade
 import arcade.gui
 from beetles import Beetle
 from spatial_manager import SpatialManager
+from sound_manager import SoundManager
 from teams import Team
 from team_color import TeamColor
 
@@ -9,6 +10,8 @@ from team_color import TeamColor
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Welcome to the Ouch, Motherfucker"
+
+sound_manager = SoundManager()
 
 class BeetleBattle(arcade.View):
     def __init__(self):
@@ -95,6 +98,7 @@ class BeetleBattle(arcade.View):
             if pea and beetle:
                 if pea.team_color == beetle.team.color:
                     return False
+                sound_manager.play_sound("BeetleHit")
                 pea.remove_from_sprite_lists()
                 pea.spatial_manager.remove(pea)
                 beetle.damage(pea.power)
