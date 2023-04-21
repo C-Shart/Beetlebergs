@@ -1,7 +1,7 @@
 import math
 from sound_manager import SoundManager
 from abilities import Ability
-from hazards import Projectile
+from hazards import Projectile, PincerExecution
 from traits import Trait
 from team_color import TeamColor
 
@@ -162,6 +162,8 @@ class Peashooter(RangedAttack):
 # ============= #
 
 class Pincers(MeleeAttack):
+    PINCERS_COOLDOWN = 5.0
+
     def __init__(self, acting_beetle):
         super().__init__(acting_beetle)
 
@@ -171,10 +173,33 @@ class Pincers(MeleeAttack):
 
     def on_update(self, delta_time):
         super().on_update(delta_time)
-        # check the cooldown from the acting beetle
-        # if ready, generate a new Pincers class
-        # otherwise, do nothing
-        # TODO: To perform the attack with given beetle during each frame, if needed
+        beetle = self.acting_beetle
+        if self.ready_to_fire:
+            angle = beetle.get_sprite_adjusted_angle_deg(beetle.angle)
+            if beetle.firing_target:
+                x, y = beetle.firing_target
+                x_distance = x - beetle.center_x
+                y_distance = y - beetle.center_y
+                angle = math.degrees(math.atan2(y_distance, x_distance))
+
+            pass
+
+            """ 
+            projectile = __class__.projectile(beetle.center_x, beetle.center_y, angle, beetle)
+            beetle.team.projectiles_list.append(projectile)
+            beetle.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
+            beetle.spatial_manager.add_sprite(projectile)
+            self.cooldown = __class__.PEASHOOTER_COOLDOWN
+            """
+
+    class trait(Trait):
+        def __init__(self):
+            super().__init__(Pincers)
+
+    class pincer_anticipation():
+        def __init__():
+            pass
+
 
 # ================= #
 # TRIGGERED ATTACKS #
