@@ -510,6 +510,14 @@ Note: I was thinking about this, and I think stat changes\nsuck as a reward gene
 * Secondary Attacks/Abilities: These Traits give the beetle a secondary attack.
 * Attack Boosts: These Traits modify how the attacks of the beetle work. They may affect just the primary attack, just
   the secondary attack (if any), or both attacks (if able).
+  * There should be a specific subclass of peashooter mods. Things such as:
+    * Spread shot : Either adds +1 projectile and both projectiles come out at a V angle, OR adds 2 projectiles at a V angle in addition to the forward projectile
+    * Ricochet : Shots bounce in a random direction within _n°_ arc after hitting an enemy beetle Multiples possible.
+    * Bounce : Shots bounce in a random direction within _n°_ arc after hitting an environmental obstacle. Multiples possible.
+    * Shotgun : Peashooter shoots multiple shorter-range projectiles in an arc
+    * Burst : Beetle shoots in bursts of weaker shots 
+      i.e. burst_shot_power == shot_power - (_n_ * .1), where _n_ is the team's number of Burst traits
+    * Sniper : Fire rate down, shot power up, shot speed WAY up, adds railgun-like effect to projectile
 * Triggered Responses: These Traits only come into effect when certain conditions such as taking damage, the current
   position of the beetle in relation to other beetles, or teams reaching certain numbers of beetles remaining.
 
