@@ -1,6 +1,7 @@
 import arcade
 import math
 import random
+import sound_manager
 from sound_manager import SoundManager
 from statemachine import StateMachine, State
 from team_color import TeamColor
@@ -18,8 +19,6 @@ DEFAULT_MAX_ROTATION = math.pi / 360.0
 DEFAULT_AWARENESS = 1
 DEFAULT_VISION = 250
 DEFAULT_ACCURACY = 25
-
-sound_manager = SoundManager()
 
 class Beetle(arcade.Sprite):
     def __init__(self, team, center_x=0, center_y=0):
@@ -132,7 +131,7 @@ class Beetle(arcade.Sprite):
             ability.active = self.active
 
         if self.hit_points <= 0:
-            sound_manager.play_sound("BeetleDead")
+            SoundManager.instance.play_sound(sound_manager.BEETLE_DEAD)
             self.remove_from_sprite_lists()
             self.spatial_manager.remove(self)
             if self.logic_state_machine.current_state != __class__.logic.dead:

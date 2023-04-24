@@ -1,4 +1,5 @@
 import math
+import sound_manager
 from sound_manager import SoundManager
 from abilities import Ability
 from hazards import Projectile
@@ -10,8 +11,6 @@ DEFAULT_FIRE_RATE = 20.0
 DEFAULT_RANGE = 500.0
 PROJECTILE_MOVE_FORCE = 2500
 PROJECTILE_SCALING = 1
-
-sound_manager = SoundManager()
 
 class Attack(Ability):
     def __init__(self, acting_beetle):
@@ -97,7 +96,7 @@ class Peashooter(RangedAttack):
 
             # Fixes the angle of the sprite itself, avoiding changing the velocity vector
             self.angle -= 90.0
-            sound_manager.play_sound("PeashooterPew")
+            SoundManager.instance.play_sound(sound_manager.PEASHOOTER_PEW)
 
         def draw(self):
             super().draw()

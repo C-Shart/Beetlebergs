@@ -2,6 +2,7 @@ import arcade
 import arcade.gui
 from beetles import Beetle
 from spatial_manager import SpatialManager
+import sound_manager
 from sound_manager import SoundManager
 from teams import Team
 from team_color import TeamColor
@@ -98,7 +99,7 @@ class BeetleBattle(arcade.View):
             if pea and beetle:
                 if pea.team_color == beetle.team.color:
                     return False
-                sound_manager.play_sound("BeetleHit")
+                SoundManager.instance.play_sound(sound_manager.BEETLE_HIT)
                 pea.remove_from_sprite_lists()
                 pea.spatial_manager.remove(pea)
                 beetle.damage(pea.power)
