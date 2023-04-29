@@ -2,6 +2,7 @@ import arcade
 import math
 import random
 from statemachine import StateMachine, State
+from stats_manager import StatsManager
 from team_color import TeamColor
 
 BEETLE_SPRITE_PATH_GREEN = "Assets/Sprites/beetle1_GREEN.png"
@@ -179,6 +180,7 @@ class Beetle(arcade.Sprite):
             arcade.play_sound(self.sfx_beetle_dead)
             self.remove_from_sprite_lists()
             self.spatial_manager.remove(self)
+            StatsManager.instance.record_stat(StatsManager.BEETLE_DEAD, team_color=self.team.color)
             if self.logic_state_machine.current_state != __class__.logic.dead:
                 self.logic_state_machine.beetle_dead()
         else:

@@ -2,6 +2,7 @@ import arcade
 import arcade.gui
 from beetles import Beetle
 from spatial_manager import SpatialManager
+from stats_manager import StatsManager
 from teams import Team
 from team_color import TeamColor
 
@@ -229,12 +230,6 @@ class BeetleBattle(arcade.View):
             self.status_text_label.text = "Invalid number of battles requested; must be an integer of at least 1"
             self.status_text_label.fit_content()
 
-        self.spatial_manager.on_update(delta_time)
-        self.green_team.on_update(delta_time)
-        self.red_team.on_update(delta_time)
-        self.physics_engine.step()
-        self.physics_engine.resync_sprites()
-
         if self.running_battles:
             if self.battles_left == 0:
                 self.settings_box.clear()
@@ -243,14 +238,21 @@ class BeetleBattle(arcade.View):
             elif self.battles_left is None:
                 self.battles_left = self.battles_to_run
 
+        self.spatial_manager.on_update(delta_time)
+        self.green_team.on_update(delta_time)
+        self.red_team.on_update(delta_time)
+        self.physics_engine.step()
+        self.physics_engine.resync_sprites()
+
+        if self.running_battles:
             green_team_is_alive = False
             for beetle in self.green_team.beetles:
-                if beetle.hit_points > 0:
+                if beetle.logic_state_machine.current_state != Beetle.logic.dead:
                     green_team_is_alive = True
                     break
             red_team_is_alive = False
             for beetle in self.red_team.beetles:
-                if beetle.hit_points > 0:
+                if beetle.logic_state_machine.current_state != Beetle.logic.dead:
                     red_team_is_alive = True
                     break
 
@@ -272,6 +274,11 @@ class BeetleBattle(arcade.View):
                 # some recursion or resource limit being hit. Investigate.
                 self.battles_ran += 1
                 print(f"Battle {self.battles_ran} Over!")
+
+                print(f"Battle Statistics:")
+                for stat_key in StatsManager.instance.stats:
+                    print(f"{stat_key}: {StatsManager.instance.stats[stat_key]}")
+                StatsManager.instance.clear()
 
                 if self.battles_left > 0:
                     self.battles_left -= 1
