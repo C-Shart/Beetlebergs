@@ -135,7 +135,7 @@ class BeetleBattle(arcade.View):
                 pea.remove_from_sprite_lists()
                 pea.spatial_manager.remove(pea)
                 beetle.damage(pea.power)
-                print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
+                # print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
                 return False # Yes, we hit but we don't want the beetle to go flying off, so we return False
             else:
                 return False

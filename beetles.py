@@ -238,13 +238,16 @@ class Beetle(arcade.Sprite):
         beetle_dead = start_idle.to(dead) | find_target.to(dead) | kill_target.to(dead)
 
         def on_start_battle(self):
-            print("Starting Battle! Looking for Target...")
+            # print("Starting Battle! Looking for Target...")
+            pass
 
         def on_target_acquired(self):
-            print("Acquired target! Eliminating Target...")
+            # print("Acquired target! Eliminating Target...")
+            pass
 
         def on_target_eliminated(self):
-            print("Target Eliminated! Looking for Target...")
+            # print("Target Eliminated! Looking for Target...")
+            pass
 
         def on_beetle_dead(self):
             print("RIP.")
