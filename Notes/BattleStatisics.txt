@@ -1,10 +1,20 @@
 BattleNumber
 Timestamp
 For each team:
-	NumberAlive
-	NumberDead
-	DamageTaken
-	DamageGiven
-	TimeSearching
-	TimeKilling
-	ShotAccuracy
+	Round Statistics:
+		NumberAlive
+		NumberDead
+		DamageTaken
+		DamageGiven
+		TimeSearching
+		TimeKilling
+		ShotAccuracy
+	Beetle Statistics:
+		HP
+		MoveSpeed
+		Awareness
+		RotationSpeed
+		SearchRange
+		SearchEpsilon
+		EngagementRange
+		EngagementEpsilon
