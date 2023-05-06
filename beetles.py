@@ -231,7 +231,9 @@ class Beetle(arcade.Sprite):
                 body.angular_velocity = 0.0
 
     def damage(self, damage):
+        # TODO: If we add toughness, apply damage to toughness first and return the difference
         self.hit_points -= damage
+        return damage
 
     class logic(StateMachine):
         start_idle = State(initial=True)

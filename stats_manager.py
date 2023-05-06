@@ -6,13 +6,21 @@ from team_color import TeamColor
 
 class StatsManager:
     BATTLE_STARTED = "BATTLE_STARTED"
+    DAMAGE_TAKEN = "DAMAGE_TAKEN"
+    DAMAGE_DEALT = "DAMAGE_DEALT"
     BEETLE_DEAD = "BEETLE_DEAD"
     BATTLE_FINISHED = "BATTLE_FINISHED"
 
     STAT_NAMES = {
         BATTLE_STARTED: "BattlesStarted",
+        DAMAGE_TAKEN: "DamageTaken",
+        DAMAGE_DEALT: "DamageDealt",
         BEETLE_DEAD: "BeetleDeaths",
         BATTLE_FINISHED: "BattlesFinished"
+    }
+
+    STAT_OPPOSITES = {
+        DAMAGE_DEALT: DAMAGE_TAKEN
     }
 
     def __new__(cls):
@@ -69,6 +77,21 @@ class StatsManager:
                 self.stats[team_stats_key] = value_a
             else:
                 self.stats[team_stats_key] += value_a
+
+        if stat_key in __class__.STAT_OPPOSITES:
+            opposite_stat_key = __class__.STAT_OPPOSITES[stat_key]
+            total_stats_key = self.get_total_stat_key(opposite_stat_key)
+            if total_stats_key not in self.stats:
+                self.stats[total_stats_key] = value_b
+            else:
+                self.stats[total_stats_key] += value_b
+
+            if team_b and team_b != TeamColor.NEUTRAL:
+                team_stats_key = self.get_team_stat_key(opposite_stat_key, team_b)
+                if team_stats_key not in self.stats:
+                    self.stats[team_stats_key] = value_b
+                else:
+                    self.stats[team_stats_key] += value_b
 
         if self.buffer:
             team_a_name = team_a.name if team_a else team_a
