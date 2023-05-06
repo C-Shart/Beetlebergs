@@ -73,6 +73,10 @@ class Beetle(arcade.Sprite):
         else:
             return None
 
+    @property
+    def team_index(self):
+        return self.team.beetles.index(self)
+
     def get_sprite_adjusted_angle_deg(_self, angle):
         angle += 90.0 # TODO: Why is this one plus?
         if angle < -180.0:
@@ -181,7 +185,7 @@ class Beetle(arcade.Sprite):
             self.remove_from_sprite_lists()
             self.spatial_manager.remove(self)
             StatsManager.instance.record_stat(
-                StatsManager.BEETLE_DEAD, team_a=self.team.color, actor_id_a=self.team.beetles.index(self))
+                StatsManager.BEETLE_DEAD, team_a=self.team.color, actor_id_a=self.team_index)
             if self.logic_state_machine.current_state != __class__.logic.dead:
                 self.logic_state_machine.beetle_dead()
         else:

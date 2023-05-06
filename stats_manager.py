@@ -103,12 +103,12 @@ class StatsManager:
             for beetle in team_a.beetles:
                 self.write_detailed_stats_row(
                     __class__.BATTLE_STARTED,
-                    team_a.color.name, team_a.beetles.index(beetle), beetle.hit_points,
+                    team_a.color.name, beetle.team_index, beetle.hit_points,
                     value_b=beetle.__class__.__name__)
             for beetle in team_b.beetles:
                 self.write_detailed_stats_row(
                     __class__.BATTLE_STARTED,
-                    team_b.color.name, team_b.beetles.index(beetle), beetle.hit_points,
+                    team_b.color.name, beetle.team_index, beetle.hit_points,
                     value_b=beetle.__class__.__name__)
 
     def save_detailed_stats(self):
