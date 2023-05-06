@@ -139,6 +139,7 @@ class BeetleBattle(arcade.View):
                 pea.remove_from_sprite_lists()
                 pea.spatial_manager.remove(pea)
                 damage_dealt = beetle.damage(pea.power)
+                StatsManager.instance.record_stat(StatsManager.SHOT_HIT, pea.team_color, "PEASHOOTER")
                 StatsManager.instance.record_stat(StatsManager.DAMAGE_DEALT, pea.team_color, "PEASHOOTER", pea.power, beetle.team.color, beetle.team_index, damage_dealt)
                 # print(f"{'Green' if beetle.team.color == TeamColor.GREEN else 'Red'} Beetle hit! Current HP is {beetle.hit_points}!")
                 return False # Yes, we hit but we don't want the beetle to go flying off, so we return False

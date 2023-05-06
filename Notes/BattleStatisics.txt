@@ -23,14 +23,14 @@ Detailed Log Format
 BattleNumber,Timestamp,Event,TeamA,ActorA,ValueA,TeamB,ActorB,ValueB
 # Battle begins with 5 green (1 elite, 4 basic) and 3 red beetles (1 queen, 2 basic)
 # ValueA is starting HP
-1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,0,25,,,ELITE
-1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,1,13,,,BASIC
-1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,2,13,,,BASIC
-1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,3,13,,,BASIC
-1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,4,13,,,BASIC
-1,2023-04-29T21:21:00,BATTLE_STARTED,RED,0,38,,,QUEEN
-1,2023-04-29T21:21:00,BATTLE_STARTED,RED,1,13,,,BASIC
-1,2023-04-29T21:21:00,BATTLE_STARTED,RED,2,13,,,BASIC
+1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,0,25,,,EliteBeetle
+1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,1,13,,,Beetle
+1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,2,13,,,Beetle
+1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,3,13,,,Beetle
+1,2023-04-29T21:21:00,BATTLE_STARTED,GREEN,4,13,,,Beetle
+1,2023-04-29T21:21:00,BATTLE_STARTED,RED,0,38,,,QueenBeetle
+1,2023-04-29T21:21:00,BATTLE_STARTED,RED,1,13,,,Beetle
+1,2023-04-29T21:21:00,BATTLE_STARTED,RED,2,13,,,Beetle
 # Red beetle #0 dies
 1,2023-04-29T21:21:00,BEETLE_DEAD,RED,0,1,,,,
 # Green beetle #2 does 18 damage to Red beetle #1, but thanks to toughness, only 13 damage taken
@@ -38,6 +38,7 @@ BattleNumber,Timestamp,Event,TeamA,ActorA,ValueA,TeamB,ActorB,ValueB
 # RED beetle #4 fires peashooter (could eventually augment with position and facing data...)
 1,2023-04-29T21:21:00,WEAPON_FIRED,RED,4,PEASHOOTER,,,
 # RED peashooter projectile hits Green Beetle #0, and does 1 damage and it gets through
+1,2023-04-29T21:21:00,SHOT_HIT,RED,PEASHOOTER,1,,,
 1,2023-04-29T21:21:00,DAMAGE_DEALT,RED,PEASHOOTER,1,GREEN,0,1
 # RED beetle #4 begins searching
 1,2023-04-29T21:21:00,STATE_CHANGED,RED,4,SEARCHING,,,

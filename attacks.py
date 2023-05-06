@@ -2,6 +2,7 @@ import math
 from arcade import play_sound, load_sound
 from abilities import Ability
 from hazards import Projectile
+from stats_manager import StatsManager
 from traits import Trait
 from team_color import TeamColor
 
@@ -72,6 +73,8 @@ class Peashooter(RangedAttack):
             beetle.physics_engine.add_sprite(projectile, elasticity = 0.1, collision_type = "pea")
             beetle.spatial_manager.add_sprite(projectile)
             self.cooldown = __class__.PEASHOOTER_COOLDOWN
+            StatsManager.instance.record_stat(
+                StatsManager.SHOT_FIRED, beetle.team.color, beetle.team_index, "PEASHOOTER")
 
     class trait(Trait):
         def __init__(self):

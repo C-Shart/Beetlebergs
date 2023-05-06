@@ -6,6 +6,8 @@ from team_color import TeamColor
 
 class StatsManager:
     BATTLE_STARTED = "BATTLE_STARTED"
+    SHOT_FIRED = "SHOT_FIRED"
+    SHOT_HIT = "SHOT_HIT"
     DAMAGE_TAKEN = "DAMAGE_TAKEN"
     DAMAGE_DEALT = "DAMAGE_DEALT"
     BEETLE_DEAD = "BEETLE_DEAD"
@@ -13,6 +15,8 @@ class StatsManager:
 
     STAT_NAMES = {
         BATTLE_STARTED: "BattlesStarted",
+        SHOT_FIRED: "ShotsFired",
+        SHOT_HIT: "ShotsHit",
         DAMAGE_TAKEN: "DamageTaken",
         DAMAGE_DEALT: "DamageDealt",
         BEETLE_DEAD: "BeetleDeaths",
@@ -66,6 +70,7 @@ class StatsManager:
     def record_stat(self, stat_key,
                     team_a=TeamColor.NEUTRAL, actor_id_a=None, value_a=1, team_b=None, actor_id_b=None, value_b=None):
         total_stats_key = self.get_total_stat_key(stat_key)
+        value_a = 1 if isinstance(value_a, str) else value_a
         if total_stats_key not in self.stats:
             self.stats[total_stats_key] = value_a
         else:
@@ -73,6 +78,7 @@ class StatsManager:
 
         if team_a != TeamColor.NEUTRAL:
             team_stats_key = self.get_team_stat_key(stat_key, team_a)
+            value_b = 1 if isinstance(value_b, str) else value_b
             if team_stats_key not in self.stats:
                 self.stats[team_stats_key] = value_a
             else:
