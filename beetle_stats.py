@@ -35,6 +35,7 @@ class BeetleBattle(arcade.View):
         self.battles_to_run = 5
         self.battles_left = None
         self.battles_ran = 0
+        self.logged_battle_start = False
         self.running_battles = False
         self.battle_count_box = arcade.gui.UIBoxLayout(vertical=False)
         self.battle_count_label = None
@@ -88,6 +89,8 @@ class BeetleBattle(arcade.View):
         self.reset_button = arcade.gui.UIFlatButton(text="Write Data and Reset", width=300)
         self.reset_button.on_click = self.on_click_reset
         # Will be added after Pause button pressed or Battles end
+
+        StatsManager.instance.start_detailed_stats()
 
     def reset_battle(self):
         BEETLES_PER_TEAM = 10
@@ -175,6 +178,8 @@ class BeetleBattle(arcade.View):
         self.spatial_manager.add_sprite_list(self.green_team.beetles)
         self.spatial_manager.add_sprite_list(self.red_team.beetles)
 
+        self.logged_battle_start = False
+
     def on_click_start(self, event):
         if self.status_text_label.text:
             return # Don't allow the battles to start when there's bad input
@@ -182,6 +187,10 @@ class BeetleBattle(arcade.View):
         self.settings_box.add(self.pause_button)
 
         self.running_battles = True
+        if not self.logged_battle_start:
+            StatsManager.instance.start_battle(self.green_team, self.red_team)
+            self.logged_battle_start = True;
+
         self.green_team.active = True
         self.red_team.active = True
 
@@ -196,7 +205,8 @@ class BeetleBattle(arcade.View):
         self.red_team.active = False
 
     def on_click_reset(self, event):
-        # TODO: Write Data
+        StatsManager.instance.save_detailed_stats()
+        StatsManager.instance.clear()
         self.battles_left = None
         self.battles_ran = 0
         self.setup()
@@ -261,14 +271,11 @@ class BeetleBattle(arcade.View):
                 self.red_team.active = False
 
                 if green_team_is_alive and not red_team_is_alive:
-                    # TODO: Record Green Win
-                    pass
+                    StatsManager.instance.record_stat(StatsManager.BATTLE_FINISHED, TeamColor.GREEN)
                 elif not green_team_is_alive and red_team_is_alive:
-                    # TODO: Record Red Win
-                    pass
+                    StatsManager.instance.record_stat(StatsManager.BATTLE_FINISHED, TeamColor.RED)
                 else:
-                    # TODO: Record Neutral Win
-                    pass
+                    StatsManager.instance.record_stat(StatsManager.BATTLE_FINISHED, TeamColor.NEUTRAL)
 
                 # TODO: When I ran indefinitely, the game froze before the 47th battle, which makes me think there's
                 # some recursion or resource limit being hit. Investigate.
@@ -277,8 +284,7 @@ class BeetleBattle(arcade.View):
 
                 print(f"Battle Statistics:")
                 for stat_key in StatsManager.instance.stats:
-                    print(f"{stat_key}: {StatsManager.instance.stats[stat_key]}")
-                StatsManager.instance.clear()
+                    print(f"{StatsManager.instance.get_stat_name(stat_key)}: {StatsManager.instance.stats[stat_key]}")
 
                 if self.battles_left > 0:
                     self.battles_left -= 1
@@ -286,6 +292,8 @@ class BeetleBattle(arcade.View):
 
                 if self.battles_left != 0:
                     self.reset_battle()
+                    StatsManager.instance.start_battle(self.green_team, self.red_team);
+                    self.logged_battle_start = True
                     self.green_team.active = True
                     self.red_team.active = True
 

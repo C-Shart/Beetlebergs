@@ -180,7 +180,8 @@ class Beetle(arcade.Sprite):
             arcade.play_sound(self.sfx_beetle_dead)
             self.remove_from_sprite_lists()
             self.spatial_manager.remove(self)
-            StatsManager.instance.record_stat(StatsManager.BEETLE_DEAD, team_color=self.team.color)
+            StatsManager.instance.record_stat(
+                StatsManager.BEETLE_DEAD, team_a=self.team.color, actor_id_a=self.team.beetles.index(self))
             if self.logic_state_machine.current_state != __class__.logic.dead:
                 self.logic_state_machine.beetle_dead()
         else:

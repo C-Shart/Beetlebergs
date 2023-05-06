@@ -133,3 +133,6 @@ dmypy.json
 
 # PureRef files
 .pur/
+
+# Detailed Stats files
+BeetlebergsDetailedStats*.csv
