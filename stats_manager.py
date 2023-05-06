@@ -12,6 +12,7 @@ class StatsManager:
     DAMAGE_DEALT = "DAMAGE_DEALT"
     BEETLE_DEAD = "BEETLE_DEAD"
     BATTLE_FINISHED = "BATTLE_FINISHED"
+    STATE_CHANGED = "STATE_CHANGED"
 
     STAT_NAMES = {
         BATTLE_STARTED: "BattlesStarted",
@@ -20,7 +21,8 @@ class StatsManager:
         DAMAGE_TAKEN: "DamageTaken",
         DAMAGE_DEALT: "DamageDealt",
         BEETLE_DEAD: "BeetleDeaths",
-        BATTLE_FINISHED: "BattlesFinished"
+        BATTLE_FINISHED: "BattlesFinished",
+        STATE_CHANGED: "StateChanges"
     }
 
     STAT_OPPOSITES = {
@@ -70,34 +72,34 @@ class StatsManager:
     def record_stat(self, stat_key,
                     team_a=TeamColor.NEUTRAL, actor_id_a=None, value_a=1, team_b=None, actor_id_b=None, value_b=None):
         total_stats_key = self.get_total_stat_key(stat_key)
-        value_a = 1 if isinstance(value_a, str) else value_a
+        numeric_value_a = 1 if isinstance(value_a, str) else value_a
         if total_stats_key not in self.stats:
-            self.stats[total_stats_key] = value_a
+            self.stats[total_stats_key] = numeric_value_a
         else:
-            self.stats[total_stats_key] += value_a
+            self.stats[total_stats_key] += numeric_value_a
 
         if team_a != TeamColor.NEUTRAL:
             team_stats_key = self.get_team_stat_key(stat_key, team_a)
-            value_b = 1 if isinstance(value_b, str) else value_b
             if team_stats_key not in self.stats:
-                self.stats[team_stats_key] = value_a
+                self.stats[team_stats_key] = numeric_value_a
             else:
-                self.stats[team_stats_key] += value_a
+                self.stats[team_stats_key] += numeric_value_a
 
         if stat_key in __class__.STAT_OPPOSITES:
             opposite_stat_key = __class__.STAT_OPPOSITES[stat_key]
             total_stats_key = self.get_total_stat_key(opposite_stat_key)
+            numeric_value_b = 1 if isinstance(value_b, str) else value_b
             if total_stats_key not in self.stats:
-                self.stats[total_stats_key] = value_b
+                self.stats[total_stats_key] = numeric_value_b
             else:
-                self.stats[total_stats_key] += value_b
+                self.stats[total_stats_key] += numeric_value_b
 
             if team_b and team_b != TeamColor.NEUTRAL:
                 team_stats_key = self.get_team_stat_key(opposite_stat_key, team_b)
                 if team_stats_key not in self.stats:
-                    self.stats[team_stats_key] = value_b
+                    self.stats[team_stats_key] = numeric_value_b
                 else:
-                    self.stats[team_stats_key] += value_b
+                    self.stats[team_stats_key] += numeric_value_b
 
         if self.buffer:
             team_a_name = team_a.name if team_a else team_a

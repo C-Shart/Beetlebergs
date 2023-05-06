@@ -46,7 +46,7 @@ class Beetle(arcade.Sprite):
         self.accuracy = DEFAULT_ACCURACY
         self.angle = -90.0 if team.color == TeamColor.GREEN else 90.0
         self.force = 0
-        self.logic_state_machine = __class__.logic()
+        self.logic_state_machine = __class__.logic(self)
         self.target_facing = None
         self.target_moving = None
         self.is_moving = None
@@ -184,8 +184,6 @@ class Beetle(arcade.Sprite):
             arcade.play_sound(self.sfx_beetle_dead)
             self.remove_from_sprite_lists()
             self.spatial_manager.remove(self)
-            StatsManager.instance.record_stat(
-                StatsManager.BEETLE_DEAD, team_a=self.team.color, actor_id_a=self.team_index)
             if self.logic_state_machine.current_state != __class__.logic.dead:
                 self.logic_state_machine.beetle_dead()
         else:
@@ -246,17 +244,25 @@ class Beetle(arcade.Sprite):
         target_eliminated = kill_target.to(find_target)
         beetle_dead = start_idle.to(dead) | find_target.to(dead) | kill_target.to(dead)
 
+        def __init__(self, beetle):
+            super().__init__()
+            self.beetle = beetle
+
         def on_start_battle(self):
             # print("Starting Battle! Looking for Target...")
-            pass
+            StatsManager.instance.record_stat(
+                StatsManager.STATE_CHANGED, self.beetle.team.color, self.beetle.team_index, "BATTLE_START")
 
         def on_target_acquired(self):
             # print("Acquired target! Eliminating Target...")
-            pass
+            StatsManager.instance.record_stat(
+                StatsManager.STATE_CHANGED, self.beetle.team.color, self.beetle.team_index, "KILLING")
 
         def on_target_eliminated(self):
             # print("Target Eliminated! Looking for Target...")
-            pass
+            StatsManager.instance.record_stat(
+                StatsManager.STATE_CHANGED, self.beetle.team.color, self.beetle.team_index, "SEARCHING")
 
         def on_beetle_dead(self):
-            print("RIP.")
+            # print("RIP.")
+            StatsManager.instance.record_stat(StatsManager.BEETLE_DEAD, self.beetle.team.color, self.beetle.team_index)
