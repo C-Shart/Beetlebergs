@@ -266,3 +266,5 @@ class Beetle(arcade.Sprite):
         def on_beetle_dead(self):
             # print("RIP.")
             StatsManager.instance.record_stat(StatsManager.BEETLE_DEAD, self.beetle.team.color, self.beetle.team_index)
+            StatsManager.instance.record_stat(
+                StatsManager.STATE_CHANGED, self.beetle.team.color, self.beetle.team_index, "DEAD")
